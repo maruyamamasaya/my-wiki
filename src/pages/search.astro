@@ -1,0 +1,16 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+<Layout title="検索 · Knowledge Wiki">
+  <section style="max-width:820px;margin:auto"><p class="eyebrow">全文検索</p><h1>Knowledgeを探す</h1><input id="query" class="search-input" type="search" placeholder="タイトル、alias、本文を検索" autofocus /><div id="results" class="panel" style="margin-top:18px" aria-live="polite">検索語を入力してください。</div></section>
+  <script>
+    // @ts-nocheck
+    const input = document.querySelector('#query'); const results = document.querySelector('#results');
+    const data = await fetch(`${import.meta.env.BASE_URL}knowledge-index.json`).then(r => r.json());
+    const articles = Object.values(data.articles); const params = new URLSearchParams(location.search); const initial = params.get('tag') || '';
+    const render = () => { const q = input.value.trim().toLocaleLowerCase(); const found = q ? articles.filter(a => [a.title,...a.aliases,...a.tags,a.body].join('\n').toLocaleLowerCase().includes(q)) : [];
+      results.innerHTML = found.length ? `<ul class="article-list">${found.map(a => `<li><a href="${import.meta.env.BASE_URL}articles/${a.uuid}/">${escapeHtml(a.title)}</a><div class="meta">${escapeHtml(a.path)} · ${a.updated}</div></li>`).join('')}</ul>` : q ? '一致する記事はありません。' : '検索語を入力してください。'; };
+    const escapeHtml = s => String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    input.value=initial; input.addEventListener('input',render); render();
+  </script>
+</Layout>

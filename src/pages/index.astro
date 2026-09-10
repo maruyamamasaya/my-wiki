@@ -1,0 +1,16 @@
+---
+import Layout from '../layouts/Layout.astro';
+import index from '../generated/knowledge-index.json';
+import { articleUrl } from '../lib/wiki';
+import type { KnowledgeIndex } from '../../scripts/indexer';
+const knowledgeIndex = index as KnowledgeIndex;
+const articles = Object.values(knowledgeIndex.articles).sort((a,b) => b.updated.localeCompare(a.updated));
+const tags = [...new Set(articles.flatMap((a) => a.tags))].sort();
+---
+<Layout>
+  <section><p class="eyebrow">Your durable knowledge base</p><h1>考えたことを、<br/>見失わない。</h1><p class="muted">{articles.length}件の記事 · 最終更新 {articles[0]?.updated ?? '—'}</p></section>
+  <div class="grid">
+    <section class="panel"><div style="display:flex;justify-content:space-between;align-items:center"><h2>最近更新された記事</h2><a href={`${import.meta.env.BASE_URL}search/`}>すべて検索 →</a></div><ul class="article-list">{articles.map((article) => <li><a href={articleUrl(article.uuid)}>{article.title}</a><div class="meta">{article.updated} · {article.path}</div></li>)}</ul></section>
+    <aside class="panel"><h2>タグ</h2><div class="tags">{tags.map((tag) => <a class="tag" href={`${import.meta.env.BASE_URL}search/?tag=${encodeURIComponent(tag)}`}>#{tag}</a>)}</div><h2 style="margin-top:28px">リンク状態</h2><p class="meta">未解決 {knowledgeIndex.unresolvedLinks.length}件 · 曖昧 {knowledgeIndex.ambiguousLinks.length}件</p></aside>
+  </div>
+</Layout>

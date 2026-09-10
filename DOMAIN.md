@@ -1,27 +1,32 @@
 # Domain
 
-プロジェクト固有の業務概念、用語、振る舞い、制約の正本です。技術、ストレージ、API、UIの設計は混ぜません。
-
 ## Glossary
 
-- 未定。
+- Article: 1つのMarkdown文書。
+- Article ID: Front Matterの永久UUID。
+- Wiki Link: 本文中の`[[label]]`。
+- Ambiguous Link: 候補UUIDが複数あるリンク。
+- Backlink: 対象記事を参照する記事への逆向きリンク。
 
 ## Entities
 
-- 未定。
-
-## States
-
-- 未定。
+- Article
+- Wiki Link
+- Knowledge Index
 
 ## Business Rules
 
-- 未定。
+- Articleの同一性はUUIDだけで決まり、path、ファイル名、titleに依存しない。
+- 新規ArticleはUUIDを一度だけ生成する。既存ArticleのUUIDは変更しない。
+- Link解決候補はtitle、aliases、UUID、現在pathから求める。
+- 0候補は未解決、複数候補は曖昧とし、推測で結ばない。
 
 ## Invariants
 
-- 未定。
+- UUIDは全記事で一意かつ有効。
+- Articleにはtitleがある。
+- Backlinkは解決済みoutgoing linkから再生成される。
 
 ## Open Questions
 
-- プロジェクト初期化時に整理する。
+- 将来の安全なGitHub書き込みフローはv1対象外。

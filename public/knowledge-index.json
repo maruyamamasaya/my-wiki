@@ -1,0 +1,73 @@
+{
+  "generatedAt": "2026-09-10T03:16:04.209Z",
+  "articles": {
+    "8b6df7d2-4e2e-4f73-9288-a933e65d8321": {
+      "uuid": "8b6df7d2-4e2e-4f73-9288-a933e65d8321",
+      "title": "OpenShift",
+      "aliases": [
+        "OCP"
+      ],
+      "tags": [
+        "openshift",
+        "platform"
+      ],
+      "created": "2026-09-10",
+      "updated": "2026-09-10",
+      "path": "infrastructure/openshift.md",
+      "body": "# OpenShift\n\nコンテナ化されたアプリケーションを運用するためのプラットフォーム。\n\n仮想化については [[OpenShift Virtualization]] を参照。",
+      "wikiLinks": [
+        "OpenShift Virtualization"
+      ],
+      "outgoingLinks": [
+        {
+          "label": "OpenShift Virtualization",
+          "status": "resolved",
+          "uuid": "12b5bcc6-bb25-4dc2-8edc-c0a71dbb6354"
+        }
+      ],
+      "backlinks": [
+        "12b5bcc6-bb25-4dc2-8edc-c0a71dbb6354"
+      ]
+    },
+    "12b5bcc6-bb25-4dc2-8edc-c0a71dbb6354": {
+      "uuid": "12b5bcc6-bb25-4dc2-8edc-c0a71dbb6354",
+      "title": "OpenShift Virtualization",
+      "aliases": [
+        "OCP Virtualization"
+      ],
+      "tags": [
+        "openshift",
+        "virtualization"
+      ],
+      "created": "2026-09-10",
+      "updated": "2026-09-10",
+      "path": "infrastructure/virtualization.md",
+      "body": "# OpenShift Virtualization\n\n[[OpenShift]] 上で仮想マシンを扱うための仕組み。\n\n移行メモは [[VMware移行]] に整理する。",
+      "wikiLinks": [
+        "OpenShift",
+        "VMware移行"
+      ],
+      "outgoingLinks": [
+        {
+          "label": "OpenShift",
+          "status": "resolved",
+          "uuid": "8b6df7d2-4e2e-4f73-9288-a933e65d8321"
+        },
+        {
+          "label": "VMware移行",
+          "status": "unresolved"
+        }
+      ],
+      "backlinks": [
+        "8b6df7d2-4e2e-4f73-9288-a933e65d8321"
+      ]
+    }
+  },
+  "unresolvedLinks": [
+    {
+      "sourceUuid": "12b5bcc6-bb25-4dc2-8edc-c0a71dbb6354",
+      "label": "VMware移行"
+    }
+  ],
+  "ambiguousLinks": []
+}

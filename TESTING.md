@@ -1,53 +1,29 @@
 # Testing
 
-プロジェクトの検証方針と、確立済みコマンドの正本です。Starterでは技術スタックが未定のため、実在しないコマンドを記載しません。決定後、「変更タイプ → 必要な検証」の対応を整理してください。実行可能になったら短時間の**Fast Validation**と網羅的な**Full Validation**を分けます。
-
 ## Testing Strategy
 
-未定。
+同一性とリンク解決をunit testで、型・静的生成をbuildで検証する。
 
 ## Validation Matrix
 
 | 変更タイプ | 必要な検証 |
 | --- | --- |
-| 未定 | 技術スタック決定後に定義 |
+| Indexer / schema | `npm test`、`npm run index` |
+| UI / route | `npm run build` |
+| release | `npm run check` |
 
 ## Fast Validation
 
-未定。
+`npm test`
 
 ## Full Validation
 
-未定。
-
-## Lint
-
-未定。
-
-## Format Check
-
-未定。
-
-## Typecheck
-
-未定。
+`npm run check`
 
 ## Unit Test
 
-未定。
-
-## Integration Test
-
-未定。
-
-## E2E
-
-未定。
-
-## Build
-
-未定。
+path移動、ファイル名変更、title変更、alias/UUID解決、UUID維持、Backlink、未解決、title/alias重複、UUID重複を検証する。
 
 ## Manual Verification
 
-文書間リンク、正本との整合、プロジェクト固有の受け入れ条件を確認する。具体的手順は初期化後に定義する。
+Home、Article、Search、追加画面をmobile/desktopで確認し、Pagesではproject subpathのasset/linkを確認する。

@@ -1,43 +1,47 @@
-# AI-driven Development Starter
+# Personal Knowledge Wiki
 
-AIエージェントと人間が、要件整理・設計・実装・レビュー・検証を一貫した方法で始めるための、技術スタック非依存のStarter Repositoryです。現時点ではプロジェクト固有の仕様やアプリケーションコードはありません。
+Markdownを正本として管理する、自分専用の静的Knowledge Wikiです。記事はファイル名や保存場所ではなくFront Matterの永久UUIDで識別します。Obsidianで`content/`をVaultとして編集し、GitHubへのpushでGitHub Pagesが自動更新されます。
 
-## 含まれるもの
+## 開発
 
-- 現在地、設計、ドメイン、データ、優先順位、テスト、セキュリティの正本テンプレート
-- 重要な設計判断を残すADR領域
-- AI向けの短いworkflow、完了checklist、必要時に使うtemplate
-- Progressive Documentation（必要になった時だけ文書を増やす）のルール
+Node.js 22以降で`npm install`後、`npm run dev`を実行します。`npm run check`で型検査、Indexerテスト、静的ビルドをまとめて確認できます。
 
-## 含まれないもの
+## Markdownを追加する
 
-実装、技術スタック、依存関係、DB migration、CI/CD、コンテナ、デプロイ設定、実装用のfrontend/backend構成は意図的に含めていません。CODEMAP、階層型AGENTS、統合verify script、sessionsも必要になるまで作りません。
+Webの「＋ 追加」でMarkdownを貼り付けると、H1からタイトルを補完し、UUIDと日付を含むFront Matter付きファイルをダウンロードできます。ファイルを`content/`配下へ置き、必要ならaliasesやtagsを編集してください。静的サイトにGitHub tokenは保存しません。
 
-## コピー直後に行うこと
+```yaml
+---
+id: 8b6df7d2-4e2e-4f73-9288-a933e65d8321
+title: OpenShift
+aliases: [OCP]
+created: 2026-09-10
+updated: 2026-09-10
+tags: [openshift]
+---
+```
 
-1. プロジェクトの目的と対象範囲を定義する。
-2. [DOMAIN.md](DOMAIN.md)を初期化する。
-3. [ARCHITECTURE.md](ARCHITECTURE.md)を初期化する。
-4. 永続化が必要なら[DATA_MODEL.md](DATA_MODEL.md)を初期化し、不要なら`Not applicable`と記録する。
-5. [SECURITY.md](SECURITY.md)を初期化する。
-6. [ROADMAP.md](ROADMAP.md)に最初のPhaseを作る。
-7. [CURRENT.md](CURRENT.md)に現在地を記録する。
-8. 人間が内容と未決事項をレビューする。
-9. 合意後に初めて実装を始める。
+UUIDは記事作成時だけ生成し、移動、ファイル名変更、title変更の際も変更しません。本文のリンクには`[[OpenShift]]`を使います。
 
-## 推奨開発フロー
+## Obsidian
 
-要求を明確化し、正本を確認・更新して合意を得た後、検索で変更対象を絞り、最小変更を実装します。関連する検証とレビューを行い、実装と正本を同期してください。AI向けの詳細ルールは[AGENTS.md](AGENTS.md)を参照してください。
+Obsidianで`content/`をVaultとして開きます。通常のMarkdownとWiki Linkのまま編集でき、移動・rename後もFront Matterの`id`を維持します。
 
-## 主要ドキュメント
+## Indexを再生成する
 
-| 文書 | 役割 |
-| --- | --- |
-| [CURRENT.md](CURRENT.md) | 現在地 |
-| [ARCHITECTURE.md](ARCHITECTURE.md) | 現在のシステム構造 |
-| [DOMAIN.md](DOMAIN.md) | 業務概念とルール |
-| [DATA_MODEL.md](DATA_MODEL.md) | 永続化モデル |
-| [ROADMAP.md](ROADMAP.md) | 開発優先順位 |
-| [TESTING.md](TESTING.md) | 検証方針 |
-| [SECURITY.md](SECURITY.md) | セキュリティ方針 |
-| [decisions/](decisions/) | 重要な設計判断 |
+`npm run index`を実行します。Indexerは`content/**/*.md`を走査し、`public/knowledge-index.json`とビルド用Indexを生成します。UUID重複や必須項目不足はエラーにし、title/aliasが重複するリンクは曖昧、見つからないリンクは未解決として記録します。
+
+## GitHub Pagesへデプロイする
+
+1. Repositoryの Settings → Pages → Source で「GitHub Actions」を選択します。
+2. `main`へpushします。
+3. `.github/workflows/deploy-pages.yml`がテスト、Index生成、ビルド、Pages公開を実行します。
+
+Project PagesのサブパスはworkflowがRepository名から設定します。独自ドメインを使う場合は`SITE_URL`と`BASE_PATH`を調整してください。
+
+## 主な構成
+
+- `content/`: Markdownの正本（Obsidian Vault）
+- `scripts/indexer.ts`: UUID、Wiki Link、Backlinkの解決
+- `src/pages/`: Home、Article、Search、追加画面
+- `tests/`: path移動、rename、alias、UUID、Backlink、未解決・曖昧リンクの検証

@@ -1,0 +1,16 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import index from '../../generated/knowledge-index.json';
+import { articleUrl, renderMarkdown } from '../../lib/wiki';
+import type { IndexedArticle, KnowledgeIndex } from '../../../scripts/indexer';
+const knowledgeIndex = index as KnowledgeIndex;
+export function getStaticPaths() { return Object.values(index.articles).map((article) => ({ params:{uuid:article.uuid}, props:{article} })); }
+const { article } = Astro.props as { article: IndexedArticle };
+const backlinks = article.backlinks.map((uuid:string) => knowledgeIndex.articles[uuid]).filter(Boolean);
+---
+<Layout title={`${article.title} · Knowledge Wiki`} description={`${article.title}のKnowledge記事`}>
+  <div class="article-shell">
+    <article class="article"><p class="eyebrow">{article.path}</p><h1>{article.title}</h1><div class="tags">{article.tags.map((tag:string) => <span class="tag">#{tag}</span>)}</div><div class="prose" set:html={renderMarkdown(article.body, knowledgeIndex)} /></article>
+    <aside class="sidebar"><div class="panel"><h2>この記事について</h2><p class="meta">更新 {article.updated}<br/>作成 {article.created}</p><h2>Backlinks</h2>{backlinks.length ? <ul class="article-list">{backlinks.map((a:any) => <li><a href={articleUrl(a.uuid)}>{a.title}</a></li>)}</ul> : <p class="meta">参照している記事はありません。</p>}</div></aside>
+  </div>
+</Layout>

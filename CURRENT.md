@@ -1,18 +1,20 @@
 # Current
 
-この文書は現在地だけを示します。経緯はGit history、重要判断はADRへ残し、完了履歴を蓄積しません。
-
 ## Current Phase
 
-Starter / Project not initialized
+Knowledge Wiki v1 implemented and validated
 
 ## Current State
 
-プロジェクト固有情報は未初期化で、アプリケーションコードは未実装です。
+AstroによるGitHub Pages向け静的Wikiを実装済み。Markdownの永久UUIDを記事IDとし、Indexerが現在path、Wiki Link、Backlink、未解決・曖昧リンクを再構築する。
 
 ## Working
 
-- Documentation starter is available.
+- `content/`を正本とするMarkdown管理
+- UUIDベースの記事URLとpath変更追従
+- Home、Article、全文検索、Markdown追加UI
+- GitHub ActionsによるPages build/deploy
+- Indexerの主要不変条件テスト
 
 ## In Progress
 
@@ -20,8 +22,8 @@ Starter / Project not initialized
 
 ## Known Issues
 
-- Project purpose, scope, and technology stack are undecided.
+- 静的サイトからGitHubへ直接commitは行わない。追加画面は安全なMarkdown生成・ダウンロードに限定する。
 
 ## Immediate Next
 
-- コピー後、READMEの初期化手順に従い、人間のレビューを受ける。
+- Repository名に合わせてGitHub Pagesを有効化し、初回deployを確認する。

@@ -1,0 +1,28 @@
+{
+  "name": "personal-knowledge-wiki",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "npm run index && astro dev",
+    "index": "tsx scripts/build-index.ts",
+    "build": "npm run index && astro build",
+    "preview": "astro preview",
+    "test": "vitest run",
+    "check": "astro check && npm test && npm run build"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.4.2",
+    "astro": "^7.3.2",
+    "fast-glob": "^3.3.3",
+    "gray-matter": "^4.0.3",
+    "markdown-it": "^14.1.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.4",
+    "@types/markdown-it": "^14.1.2",
+    "tsx": "^4.20.5",
+    "typescript": "^5.9.2",
+    "vitest": "^3.2.4"
+  }
+}
