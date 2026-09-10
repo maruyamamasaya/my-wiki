@@ -1,5 +1,5 @@
 import fg from 'fast-glob';
-import { access, mkdir, readFile, writeFile } from 'node:fs/promises';
+import { access, mkdir, readFile, stat, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { buildKnowledgeIndex, parseArticle, readArticle } from './indexer.js';
 import { prepareImport, safeRelativeMarkdownPath } from './importer.js';
@@ -8,13 +8,13 @@ const args = process.argv.slice(2);
 const apply = args.includes('--apply');
 const sourceArg = args.find((arg) => !arg.startsWith('--'));
 const destinationArg = args.find((arg) => arg.startsWith('--destination='))?.slice('--destination='.length) ?? 'imported';
-if (!sourceArg) throw new Error('Usage: npm run import -- <source-directory> [--destination=imported] [--apply]');
+if (!sourceArg) throw new Error('Usage: npm run import -- <Markdown file or directory> [--destination=imported] [--apply]');
 
 const root = process.cwd();
 const contentRoot = path.join(root, 'content');
-const sourceRoot = path.resolve(sourceArg);
+const sourcePath = path.resolve(sourceArg);
 const destination = safeRelativeMarkdownPath(destinationArg).replace(/\.md$/i, '');
-if (sourceRoot === contentRoot || sourceRoot.startsWith(`${contentRoot}${path.sep}`)) {
+if (sourcePath === contentRoot || sourcePath.startsWith(`${contentRoot}${path.sep}`)) {
   throw new Error('The source directory must be outside content/.');
 }
 
@@ -24,8 +24,12 @@ const dateInJapan = new Intl.DateTimeFormat('en-CA', {
 const existingFiles = await fg('**/*.md', { cwd: contentRoot, absolute: true });
 const existing = await Promise.all(existingFiles.map((file) => readArticle(file, contentRoot)));
 const usedUuids = new Set(existing.map((article) => article.uuid));
-const incomingFiles = await fg('**/*.{md,markdown}', { cwd: sourceRoot, absolute: true, dot: false });
-if (!incomingFiles.length) throw new Error(`No Markdown files found in ${sourceRoot}`);
+const sourceInfo = await stat(sourcePath);
+const sourceRoot = sourceInfo.isDirectory() ? sourcePath : path.dirname(sourcePath);
+const incomingFiles = sourceInfo.isDirectory()
+  ? await fg('**/*.{md,markdown}', { cwd: sourceRoot, absolute: true, dot: false })
+  : /\.(?:md|markdown)$/i.test(sourcePath) ? [sourcePath] : [];
+if (!incomingFiles.length) throw new Error(`No Markdown files found at ${sourcePath}`);
 
 const planned: Array<{ source: string; target: string; markdown: string; generatedUuid: boolean; title: string }> = [];
 for (const file of incomingFiles.sort()) {

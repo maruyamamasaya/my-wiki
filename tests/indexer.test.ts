@@ -21,5 +21,6 @@ describe('Markdown importer',()=>{
   it('keeps a valid unused UUID and existing metadata',()=>{const source=md(idA,'Existing');const result=prepareImport(source,'note.md','2026-09-11',new Set(),()=>idB);expect(result.uuid).toBe(idA);expect(result.generatedUuid).toBe(false);expect(parseArticle(result.markdown,'note.md').title).toBe('Existing');});
   it('replaces duplicate UUIDs',()=>{const result=prepareImport(md(idA,'Duplicate'),'note.md','2026-09-10',new Set([idA]),()=>idB);expect(result.uuid).toBe(idB);expect(result.generatedUuid).toBe(true);});
   it('falls back to a readable filename title',()=>{expect(titleFromMarkdown('Body','my-note.md')).toBe('my note');});
+  it('preserves notes whose opening horizontal rule resembles invalid front matter',()=>{const source='---\n### Topic\n\n- **text**\n\n---\n';const result=prepareImport(source,'topic.md','2026-09-10',new Set(),()=>idA);expect(result.title).toBe('topic');expect(parseArticle(result.markdown,'topic.md').body).toContain('### Topic');expect(parseArticle(result.markdown,'topic.md').body).toContain('- **text**');});
   it('normalizes markdown extensions and rejects traversal',()=>{expect(safeRelativeMarkdownPath('folder/a.markdown')).toBe('folder/a.md');expect(()=>safeRelativeMarkdownPath('../a.md')).toThrow(/Unsafe/);});
 });

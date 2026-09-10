@@ -27,10 +27,16 @@ UUIDは記事作成時だけ生成し、移動、ファイル名変更、title�
 
 ## Markdownを一括インポートする
 
-未整理のMarkdownが入ったディレクトリを指定すると、既存ファイルを変更せずに取り込み予定を確認できます。
+未整理のMarkdownファイル、またはMarkdownが入ったディレクトリを指定すると、既存ファイルを変更せずに取り込み予定を確認できます。
 
 ```bash
 npm run import -- /path/to/markdown-files
+```
+
+単一ファイルも指定できます。
+
+```bash
+npm run import -- "/path/to/🌟目次 - Wiki.md"
 ```
 
 問題がなければ`--apply`を付けて`content/imported/`へ書き込みます。入力元のサブディレクトリ構造は維持されます。

@@ -14,12 +14,22 @@ export interface PreparedImport {
 const strings = (value: unknown) => Array.isArray(value) ? value.map(String) : value ? [String(value)] : [];
 const validDate = (value: unknown) => /^\d{4}-\d{2}-\d{2}$/.test(String(value ?? ''));
 
+function parseLooseMatter(source: string) {
+  try {
+    return matter(source);
+  } catch {
+    // An unstructured note may begin with a Markdown horizontal rule. If the
+    // apparent front matter is invalid YAML, preserve the whole file as body.
+    return { data: {}, content: source };
+  }
+}
+
 export function titleFromMarkdown(source: string, filename: string) {
-  const parsed = matter(source);
+  const parsed = parseLooseMatter(source);
   const configured = String(parsed.data.title ?? '').trim();
   if (configured) return configured;
   const heading = parsed.content.match(/^#\s+(.+)$/m)?.[1]?.trim();
-  return heading || path.basename(filename, path.extname(filename)).replace(/[-_]+/g, ' ').trim() || 'Untitled';
+  return heading || path.basename(filename, path.extname(filename)).replace(/[-_]+/g, ' ').replace(/\s+/g, ' ').trim() || 'Untitled';
 }
 
 export function prepareImport(
@@ -29,7 +39,7 @@ export function prepareImport(
   usedUuids: Set<string>,
   createUuid = randomUUID,
 ): PreparedImport {
-  const parsed = matter(source);
+  const parsed = parseLooseMatter(source);
   const originalUuid = String(parsed.data.id ?? '');
   const generatedUuid = !UUID.test(originalUuid) || usedUuids.has(originalUuid);
   let uuid = generatedUuid ? createUuid() : originalUuid;
@@ -45,7 +55,9 @@ export function prepareImport(
     updated: validDate(parsed.data.updated) ? String(parsed.data.updated) : today,
     tags: strings(parsed.data.tags),
   };
-  return { markdown: matter.stringify(parsed.content.trimStart(), data), title, uuid, generatedUuid };
+  // Prefix the body with a newline so gray-matter does not re-interpret a
+  // leading Markdown horizontal rule while serializing the new front matter.
+  return { markdown: matter.stringify(`\n${parsed.content.trimStart()}`, data), title, uuid, generatedUuid };
 }
 
 export function safeRelativeMarkdownPath(relativePath: string) {
