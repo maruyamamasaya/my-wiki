@@ -7,7 +7,7 @@ import Layout from '../layouts/Layout.astro';
     // @ts-nocheck
     const input = document.querySelector('#query'); const results = document.querySelector('#results');
     const data = await fetch(`${import.meta.env.BASE_URL}knowledge-index.json`).then(r => r.json());
-    const articles = Object.values(data.articles); const params = new URLSearchParams(location.search); const initial = params.get('tag') || '';
+    const articles = Object.values(data.articles); const params = new URLSearchParams(location.search); const initial = params.get('q') || params.get('tag') || '';
     const render = () => { const q = input.value.trim().toLocaleLowerCase(); const found = q ? articles.filter(a => [a.title,...a.aliases,...a.tags,a.body].join('\n').toLocaleLowerCase().includes(q)) : [];
       results.innerHTML = found.length ? `<ul class="article-list">${found.map(a => `<li><a href="${import.meta.env.BASE_URL}articles/${a.uuid}/">${escapeHtml(a.title)}</a><div class="meta">${escapeHtml(a.path)} · ${a.updated}</div></li>`).join('')}</ul>` : q ? '一致する記事はありません。' : '検索語を入力してください。'; };
     const escapeHtml = s => String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));

@@ -8,9 +8,10 @@ const articles = Object.values(knowledgeIndex.articles).sort((a,b) => b.updated.
 const tags = [...new Set(articles.flatMap((a) => a.tags))].sort();
 ---
 <Layout>
-  <section><p class="eyebrow">Your durable knowledge base</p><h1>考えたことを、<br/>見失わない。</h1><p class="muted">{articles.length}件の記事 · 最終更新 {articles[0]?.updated ?? '—'}</p></section>
-  <div class="grid">
-    <section class="panel"><div style="display:flex;justify-content:space-between;align-items:center"><h2>最近更新された記事</h2><a href={`${import.meta.env.BASE_URL}search/`}>すべて検索 →</a></div><ul class="article-list">{articles.map((article) => <li><a href={articleUrl(article.uuid)}>{article.title}</a><div class="meta">{article.updated} · {article.path}</div></li>)}</ul></section>
-    <aside class="panel"><h2>タグ</h2><div class="tags">{tags.map((tag) => <a class="tag" href={`${import.meta.env.BASE_URL}search/?tag=${encodeURIComponent(tag)}`}>#{tag}</a>)}</div><h2 style="margin-top:28px">リンク状態</h2><p class="meta">未解決 {knowledgeIndex.unresolvedLinks.length}件 · 曖昧 {knowledgeIndex.ambiguousLinks.length}件</p></aside>
+  <header class="page-heading"><h1>Knowledge Wiki</h1><p class="muted">{articles.length}件の記事</p></header>
+  <form class="home-search" action={`${import.meta.env.BASE_URL}search/`}><label class="sr-only" for="home-query">記事を検索</label><input id="home-query" name="q" type="search" placeholder="記事を検索" /><button class="button" type="submit">検索</button></form>
+  <div class="grid wiki-grid">
+    <section class="wiki-section"><div class="section-heading"><h2>記事</h2><span class="meta">更新順</span></div><ul class="article-list">{articles.map((article) => <li><a href={articleUrl(article.uuid)}>{article.title}</a><div class="meta">{article.updated} · {article.path}</div></li>)}</ul></section>
+    <aside><section class="wiki-section"><h2>タグ</h2><div class="tags">{tags.map((tag) => <a class="tag" href={`${import.meta.env.BASE_URL}search/?tag=${encodeURIComponent(tag)}`}>#{tag}</a>)}</div></section><section class="wiki-section link-summary"><h2>リンク</h2><dl><div><dt>未解決</dt><dd>{knowledgeIndex.unresolvedLinks.length}</dd></div><div><dt>曖昧</dt><dd>{knowledgeIndex.ambiguousLinks.length}</dd></div></dl></section></aside>
   </div>
 </Layout>
