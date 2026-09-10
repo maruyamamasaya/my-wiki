@@ -12,6 +12,39 @@ const tags = [...new Set(articles.flatMap((a) => a.tags))].sort();
   <form class="home-search" action={`${import.meta.env.BASE_URL}search/`}><label class="sr-only" for="home-query">記事を検索</label><input id="home-query" name="q" type="search" placeholder="記事を検索" /><button class="button" type="submit">検索</button></form>
   <div class="grid wiki-grid">
     <section class="wiki-section"><div class="section-heading"><h2>記事</h2><span class="meta">更新順</span></div><ul class="article-list">{articles.map((article) => <li><a href={articleUrl(article.uuid)}>{article.title}</a><div class="meta">{article.updated} · {article.path}</div></li>)}</ul></section>
-    <aside><section class="wiki-section"><h2>タグ</h2><div class="tags">{tags.map((tag) => <a class="tag" href={`${import.meta.env.BASE_URL}search/?tag=${encodeURIComponent(tag)}`}>#{tag}</a>)}</div></section><section class="wiki-section link-summary"><h2>リンク</h2><dl><div><dt>未解決</dt><dd>{knowledgeIndex.unresolvedLinks.length}</dd></div><div><dt>曖昧</dt><dd>{knowledgeIndex.ambiguousLinks.length}</dd></div></dl></section></aside>
+    <aside><section class="wiki-section local-reading" id="frequent-section" hidden><h2>よく見る記事</h2><ol id="frequent-articles" class="compact-article-list"></ol></section><section class="wiki-section local-reading" id="history-section" hidden><h2>閲覧履歴</h2><ol id="recent-articles" class="compact-article-list"></ol><button id="clear-history" class="text-button" type="button">履歴を消去</button></section><section class="wiki-section"><h2>タグ</h2><div class="tags">{tags.map((tag) => <a class="tag" href={`${import.meta.env.BASE_URL}search/?tag=${encodeURIComponent(tag)}`}>#{tag}</a>)}</div></section><section class="wiki-section link-summary"><h2>リンク</h2><dl><div><dt>未解決</dt><dd>{knowledgeIndex.unresolvedLinks.length}</dd></div><div><dt>曖昧</dt><dd>{knowledgeIndex.ambiguousLinks.length}</dd></div></dl></section></aside>
   </div>
+  <script>
+    type ReadingItem = { uuid: string; title: string; url: string; count: number; lastViewed: number };
+    const key = 'wiki-reading-history';
+    const base = document.body.dataset.base || '/';
+    const readItems = (): ReadingItem[] => {
+      try { return JSON.parse(localStorage.getItem(key) || '[]') as ReadingItem[]; } catch { return []; }
+    };
+    const safeUrl = (value: string) => {
+      try { const url = new URL(value, location.origin); return url.origin === location.origin && url.pathname.startsWith(base) ? url.pathname : base; }
+      catch { return base; }
+    };
+    const fill = (listId: string, sectionId: string, items: ReadingItem[], showCount = false) => {
+      const list = document.querySelector(`#${listId}`);
+      const section = document.querySelector<HTMLElement>(`#${sectionId}`);
+      if (!list || !section || !items.length) return;
+      list.replaceChildren(...items.map((item) => {
+        const li = document.createElement('li');
+        const link = document.createElement('a');
+        link.href = safeUrl(item.url); link.textContent = item.title;
+        li.append(link);
+        if (showCount) { const count = document.createElement('span'); count.textContent = `${item.count}回`; li.append(count); }
+        return li;
+      }));
+      section.hidden = false;
+    };
+    const renderReadingData = () => {
+      const items = readItems();
+      fill('recent-articles', 'history-section', items.slice(0, 5));
+      fill('frequent-articles', 'frequent-section', [...items].filter((item) => item.count > 1).sort((a, b) => b.count - a.count || b.lastViewed - a.lastViewed).slice(0, 5), true);
+    };
+    document.querySelector('#clear-history')?.addEventListener('click', () => { localStorage.removeItem(key); location.reload(); });
+    renderReadingData();
+  </script>
 </Layout>

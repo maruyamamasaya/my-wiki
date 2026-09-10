@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { buildKnowledgeIndex, parseArticle } from '../scripts/indexer';
-import { renderMarkdown } from '../src/lib/wiki';
+import { renderMarkdown, renderMarkdownWithToc } from '../src/lib/wiki';
 
 const openShiftId = '8b6df7d2-4e2e-4f73-9288-a933e65d8321';
 const duplicateId = '12b5bcc6-bb25-4dc2-8edc-c0a71dbb6354';
@@ -59,5 +59,21 @@ describe('renderMarkdown wiki links', () => {
     expect(html).not.toContain('<h1>OpenShift</h1>');
     expect(html).toContain('<p>本文</p>');
     expect(html).toContain('<h1>別の見出し</h1>');
+  });
+
+  it('builds a table of contents from H2 and H3 headings with unique anchors', () => {
+    const rendered = renderMarkdownWithToc(
+      '## 概要\n\n### 詳細\n\n## 概要',
+      index,
+      '/my-wiki/',
+      'OpenShift',
+    );
+    expect(rendered.toc).toEqual([
+      { id: '概要', level: 2, text: '概要' },
+      { id: '詳細', level: 3, text: '詳細' },
+      { id: '概要-2', level: 2, text: '概要' },
+    ]);
+    expect(rendered.html).toContain('<h2 id="概要">概要</h2>');
+    expect(rendered.html).toContain('<h2 id="概要-2">概要</h2>');
   });
 });

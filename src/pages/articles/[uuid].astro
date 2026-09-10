@@ -1,22 +1,24 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import index from '../../generated/knowledge-index.json';
-import { articleUrl, renderMarkdown } from '../../lib/wiki';
+import { articleUrl, renderMarkdownWithToc } from '../../lib/wiki';
 import type { IndexedArticle, KnowledgeIndex } from '../../../scripts/indexer';
 const knowledgeIndex = index as KnowledgeIndex;
 export function getStaticPaths() { return Object.values(index.articles).map((article) => ({ params:{uuid:article.uuid}, props:{article} })); }
 const { article } = Astro.props as { article: IndexedArticle };
 const backlinks = article.backlinks.map((uuid:string) => knowledgeIndex.articles[uuid]).filter(Boolean);
+const rendered = renderMarkdownWithToc(article.body, knowledgeIndex, import.meta.env.BASE_URL, article.title);
+const showToc = rendered.toc.length >= 2;
 ---
-<Layout title={`${article.title} · Knowledge Wiki`} description={`${article.title}のKnowledge記事`}>
+<Layout title={`${article.title} · Knowledge Wiki`} description={`${article.title}のKnowledge記事`} article={article}>
   <div class="article-shell">
     <article class="article">
       <header class="article-header">
         <h1>{article.title}</h1>
         {article.tags.length > 0 && <div class="tags" aria-label="タグ">{article.tags.map((tag:string) => <span class="tag">#{tag}</span>)}</div>}
       </header>
-      <div class="prose" set:html={renderMarkdown(article.body, knowledgeIndex, import.meta.env.BASE_URL, article.title)} />
+      <div class="prose" set:html={rendered.html} />
     </article>
-    <aside class="sidebar"><div class="panel"><h2>この記事について</h2><dl class="article-meta"><div><dt>更新</dt><dd>{article.updated}</dd></div><div><dt>作成</dt><dd>{article.created}</dd></div><div><dt>保存先</dt><dd>{article.path}</dd></div></dl><h2>Backlinks</h2>{backlinks.length ? <ul class="article-list">{backlinks.map((a:any) => <li><a href={articleUrl(a.uuid)}>{a.title}</a></li>)}</ul> : <p class="meta">参照している記事はありません。</p>}</div></aside>
+    <aside class="sidebar"><div class="panel">{showToc && <nav class="toc" aria-label="目次"><h2>目次</h2><ol>{rendered.toc.map((heading) => <li class={`toc-level-${heading.level}`}><a href={`#${heading.id}`}>{heading.text}</a></li>)}</ol></nav>}<h2>この記事について</h2><dl class="article-meta"><div><dt>更新</dt><dd>{article.updated}</dd></div><div><dt>作成</dt><dd>{article.created}</dd></div><div><dt>保存先</dt><dd>{article.path}</dd></div></dl><h2>Backlinks</h2>{backlinks.length ? <ul class="article-list">{backlinks.map((a:any) => <li><a href={articleUrl(a.uuid)}>{a.title}</a></li>)}</ul> : <p class="meta">参照している記事はありません。</p>}</div></aside>
   </div>
 </Layout>

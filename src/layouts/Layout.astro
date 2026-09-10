@@ -1,6 +1,6 @@
 ---
 import '../styles/global.css';
-const { title = 'Knowledge Wiki', description = '個人用Knowledge Wiki' } = Astro.props;
+const { title = 'Knowledge Wiki', description = '個人用Knowledge Wiki', article = undefined } = Astro.props;
 const base = import.meta.env.BASE_URL;
 ---
 <!doctype html>
@@ -9,9 +9,12 @@ const base = import.meta.env.BASE_URL;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <meta name="description" content={description} />
+    <script is:inline>
+      document.documentElement.dataset.theme = localStorage.getItem('wiki-theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    </script>
     <title>{title}</title>
   </head>
-  <body>
+  <body data-base={base} data-article-id={article?.uuid} data-article-title={article?.title}>
     <header class="site-header">
       <a class="brand" href={base}><span class="brand-mark">K</span> Knowledge Wiki</a>
       <nav aria-label="メインナビゲーション">
@@ -20,5 +23,42 @@ const base = import.meta.env.BASE_URL;
     </header>
     <main><slot /></main>
     <footer>Knowledge Wiki</footer>
+    <nav class="bottom-browser" aria-label="閲覧ナビゲーション">
+      <div class="browser-actions">
+        <a class="browser-button" href={base} aria-label="ホーム" title="ホーム">⌂</a>
+        <button class="browser-button" id="nav-back" type="button" aria-label="戻る" title="戻る">←</button>
+        <button class="browser-button" id="nav-forward" type="button" aria-label="進む" title="進む">→</button>
+        <button class="browser-button" id="nav-reload" type="button" aria-label="更新" title="更新">↻</button>
+        <a class="browser-button" href={`${base}search/`} aria-label="検索" title="検索">⌕</a>
+        <button class="browser-button" id="theme-toggle" type="button" aria-label="テーマを変更" title="テーマを変更">◐</button>
+      </div>
+      <div class="address-bar" aria-label="現在地"><span aria-hidden="true">◉</span><span id="current-location"></span></div>
+    </nav>
+    <script>
+      const body = document.body;
+      type ReadingItem = { uuid: string; title: string; url: string; count: number; lastViewed: number };
+      const locationLabel = document.querySelector('#current-location');
+      if (locationLabel) locationLabel.textContent = decodeURIComponent(location.pathname);
+      document.querySelector('#nav-back')?.addEventListener('click', () => history.back());
+      document.querySelector('#nav-forward')?.addEventListener('click', () => history.forward());
+      document.querySelector('#nav-reload')?.addEventListener('click', () => location.reload());
+      document.querySelector('#theme-toggle')?.addEventListener('click', () => {
+        const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+        document.documentElement.dataset.theme = next;
+        localStorage.setItem('wiki-theme', next);
+      });
+
+      const articleId = body.dataset.articleId;
+      const articleTitle = body.dataset.articleTitle;
+      if (articleId && articleTitle) {
+        try {
+          const key = 'wiki-reading-history';
+          const items = JSON.parse(localStorage.getItem(key) || '[]') as ReadingItem[];
+          const previous = items.find((item) => item.uuid === articleId);
+          const current = { uuid: articleId, title: articleTitle, url: location.pathname, count: (previous?.count || 0) + 1, lastViewed: Date.now() };
+          localStorage.setItem(key, JSON.stringify([current, ...items.filter((item) => item.uuid !== articleId)].slice(0, 50)));
+        } catch { /* localStorageが使えない環境では履歴を記録しない */ }
+      }
+    </script>
   </body>
 </html>
