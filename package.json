@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "npm run index && astro dev",
     "index": "tsx scripts/build-index.ts",
+    "import": "node --import tsx scripts/import-markdown.ts",
     "build": "npm run index && astro build",
     "preview": "astro preview",
     "test": "vitest run",

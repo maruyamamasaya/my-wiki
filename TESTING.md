@@ -2,7 +2,7 @@
 
 ## Testing Strategy
 
-同一性とリンク解決をunit testで、型・静的生成をbuildで検証する。
+同一性、リンク解決、Markdownインポート変換をunit testで、型・静的生成をbuildで検証する。
 
 ## Validation Matrix
 

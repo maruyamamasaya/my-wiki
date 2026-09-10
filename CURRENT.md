@@ -13,6 +13,7 @@ AstroによるGitHub Pages向け静的Wikiを実装済み。Markdownの永久UUI
 - `content/`を正本とするMarkdown管理
 - UUIDベースの記事URLとpath変更追従
 - Home、Article、全文検索、Markdown追加UI
+- 未整理Markdownのdry-run付き一括インポートCLI
 - GitHub ActionsによるPages build/deploy
 - Indexerの主要不変条件テスト
 

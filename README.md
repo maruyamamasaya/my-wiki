@@ -25,6 +25,28 @@ tags: [openshift]
 
 UUIDは記事作成時だけ生成し、移動、ファイル名変更、title変更の際も変更しません。本文のリンクには`[[OpenShift]]`を使います。
 
+## Markdownを一括インポートする
+
+未整理のMarkdownが入ったディレクトリを指定すると、既存ファイルを変更せずに取り込み予定を確認できます。
+
+```bash
+npm run import -- /path/to/markdown-files
+```
+
+問題がなければ`--apply`を付けて`content/imported/`へ書き込みます。入力元のサブディレクトリ構造は維持されます。
+
+```bash
+npm run import -- /path/to/markdown-files --apply
+```
+
+保存先の大分類は変更できます。
+
+```bash
+npm run import -- /path/to/markdown-files --destination=ai --apply
+```
+
+UUIDがない、無効、または既存記事と重複する場合は新しいUUIDを発行します。titleはFront Matter、最初のH1、ファイル名の順で補完し、日付、aliases、tagsにも安全な初期値を設定します。同名ファイルを上書きせず連番で保存します。取り込み後は`npm run check`で全体を検証してください。
+
 `created`と`updated`の日付、および画面に表示する日時は日本時間（`Asia/Tokyo`）を基準にします。既存記事を編集した場合は`updated`を日本時間の日付へ更新してください。
 
 ## Obsidian

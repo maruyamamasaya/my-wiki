@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { buildKnowledgeIndex, parseArticle } from '../scripts/indexer';
+import { prepareImport, safeRelativeMarkdownPath, titleFromMarkdown } from '../scripts/importer';
 import { dateInJapan, dateTimeInJapan } from '../src/lib/datetime';
 const idA='8b6df7d2-4e2e-4f73-9288-a933e65d8321', idB='12b5bcc6-bb25-4dc2-8edc-c0a71dbb6354';
 const md=(id:string,title:string,body='',aliases:string[]=[] )=>`---\nid: ${id}\ntitle: ${title}\naliases: [${aliases.join(',')}]\ncreated: 2026-09-10\nupdated: 2026-09-10\ntags: [test]\n---\n${body}`;
@@ -14,4 +15,11 @@ describe('knowledge index',()=>{
 describe('Japan time',()=>{
   it('uses the next calendar day after midnight in Japan',()=>{expect(dateInJapan(new Date('2026-09-10T15:30:00Z'))).toBe('2026-09-11');});
   it('formats timestamps in Asia/Tokyo',()=>{expect(dateTimeInJapan('2026-09-10T15:30:00Z')).toContain('2026/09/11');});
+});
+describe('Markdown importer',()=>{
+  it('derives a title from H1 and fills required metadata',()=>{const used=new Set<string>();const result=prepareImport('# Imported title\n\nBody','note.md','2026-09-10',used,()=>idA);const parsed=parseArticle(result.markdown,'note.md');expect(result.title).toBe('Imported title');expect(parsed.uuid).toBe(idA);expect(parsed.created).toBe('2026-09-10');});
+  it('keeps a valid unused UUID and existing metadata',()=>{const source=md(idA,'Existing');const result=prepareImport(source,'note.md','2026-09-11',new Set(),()=>idB);expect(result.uuid).toBe(idA);expect(result.generatedUuid).toBe(false);expect(parseArticle(result.markdown,'note.md').title).toBe('Existing');});
+  it('replaces duplicate UUIDs',()=>{const result=prepareImport(md(idA,'Duplicate'),'note.md','2026-09-10',new Set([idA]),()=>idB);expect(result.uuid).toBe(idB);expect(result.generatedUuid).toBe(true);});
+  it('falls back to a readable filename title',()=>{expect(titleFromMarkdown('Body','my-note.md')).toBe('my note');});
+  it('normalizes markdown extensions and rejects traversal',()=>{expect(safeRelativeMarkdownPath('folder/a.markdown')).toBe('folder/a.md');expect(()=>safeRelativeMarkdownPath('../a.md')).toThrow(/Unsafe/);});
 });

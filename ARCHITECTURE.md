@@ -14,6 +14,7 @@ GitHub Repositoryの`content/`を唯一の正本とする、ビルド時生成�
 ## Major Components
 
 - Content: Front Matter付きMarkdown
+- Importer: ローカルMarkdownの診断、必須metadata補完、安全な一括取り込み
 - Indexer: 検証、リンク解決、Backlink逆引き、検索用本文の生成
 - Web: Home、UUID記事route、Search、Markdown追加UI
 - Delivery: pushを起点にIndex、test、build、Pages deploy
