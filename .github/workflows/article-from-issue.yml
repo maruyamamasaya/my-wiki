@@ -1,0 +1,79 @@
+name: Create article PR
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  create-article-pr:
+    if: github.event.issue.user.login == github.repository_owner && startsWith(github.event.issue.title, '[Article] ')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create article branch and pull request
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = context.payload.issue.body || '';
+            const encoded = body.match(/<!-- wiki-article-data:([A-Za-z0-9+/=]+) -->/)?.[1];
+            if (!encoded) {
+              core.setFailed('Article data was not found in the issue.');
+              return;
+            }
+
+            let submission;
+            try {
+              submission = JSON.parse(Buffer.from(encoded, 'base64').toString('utf8'));
+            } catch {
+              core.setFailed('Article data is invalid.');
+              return;
+            }
+
+            const allowedFolders = new Set(['misc', 'infrastructure', 'programming', 'ai', 'learning']);
+            const pathMatch = String(submission.path || '').match(/^([^/]+)\/([^/]+\.md)$/);
+            const markdown = String(submission.markdown || '');
+            const id = markdown.match(/^id:\s*([0-9a-f-]+)$/m)?.[1];
+            const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+            if (submission.version !== 1 || !pathMatch || !allowedFolders.has(pathMatch[1]) || !uuid.test(id || '')) {
+              core.setFailed('Article path or UUID is invalid.');
+              return;
+            }
+            if (!markdown.startsWith('---\n') || markdown.length > 100000) {
+              core.setFailed('Article Markdown is invalid or too large.');
+              return;
+            }
+
+            const articlePath = `content/${submission.path}`;
+            const { owner, repo } = context.repo;
+            const repository = await github.rest.repos.get({ owner, repo });
+            const base = repository.data.default_branch;
+            const baseRef = await github.rest.git.getRef({ owner, repo, ref: `heads/${base}` });
+            const branch = `article/issue-${context.issue.number}`;
+
+            try {
+              await github.rest.repos.getContent({ owner, repo, path: articlePath, ref: base });
+              core.setFailed(`${articlePath} already exists.`);
+              return;
+            } catch (error) {
+              if (error.status !== 404) throw error;
+            }
+
+            await github.rest.git.createRef({ owner, repo, ref: `refs/heads/${branch}`, sha: baseRef.data.object.sha });
+            await github.rest.repos.createOrUpdateFileContents({
+              owner, repo, path: articlePath, branch,
+              message: `Add ${submission.path}`,
+              content: Buffer.from(markdown, 'utf8').toString('base64'),
+            });
+            const pull = await github.rest.pulls.create({
+              owner, repo, head: branch, base,
+              title: context.payload.issue.title.replace(/^\[Article\]\s*/, 'Add article: '),
+              body: `Closes #${context.issue.number}\n\nWikiの追加画面から作成された記事です。`,
+            });
+            await github.rest.issues.createComment({
+              owner, repo, issue_number: context.issue.number,
+              body: `Pull Requestを作成しました: #${pull.data.number}`,
+            });

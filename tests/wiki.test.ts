@@ -45,4 +45,19 @@ describe('renderMarkdown wiki links', () => {
     expect(html).toContain('<a href="https://github.com/">GitHub</a>');
     expect(html).toContain('<code class="language-html">[[OpenShift]]');
   });
+
+  it('renders emphasis and GitHub-style tables', () => {
+    const html = render('**重要**\n\n| 項目 | 内容 |\n| --- | --- |\n| 状態 | 完了 |');
+    expect(html).toContain('<strong>重要</strong>');
+    expect(html).toContain('<table>');
+    expect(html).toContain('<th>項目</th>');
+    expect(html).toContain('<td>完了</td>');
+  });
+
+  it('omits only a leading H1 that duplicates the page title', () => {
+    const html = renderMarkdown('# OpenShift\n\n本文\n\n# 別の見出し', index, '/my-wiki/', 'OpenShift');
+    expect(html).not.toContain('<h1>OpenShift</h1>');
+    expect(html).toContain('<p>本文</p>');
+    expect(html).toContain('<h1>別の見出し</h1>');
+  });
 });

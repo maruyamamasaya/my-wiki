@@ -6,7 +6,19 @@ export function articleUrl(uuid: string, base = import.meta.env.BASE_URL) {
   return `${base}articles/${uuid}/`.replace(/\/+/g, '/');
 }
 
-export function renderMarkdown(body: string, index: KnowledgeIndex, base = import.meta.env.BASE_URL) {
+function withoutDuplicateTitle(body: string, title?: string) {
+  if (!title) return body;
+  const lines = body.split(/\r?\n/);
+  const firstContentLine = lines.findIndex((line) => line.trim());
+  if (firstContentLine < 0) return body;
+  const heading = lines[firstContentLine].match(/^#\s+(.+?)\s*#*\s*$/);
+  if (!heading || heading[1].trim() !== title.trim()) return body;
+  lines.splice(firstContentLine, 1);
+  if (lines[firstContentLine]?.trim() === '') lines.splice(firstContentLine, 1);
+  return lines.join('\n');
+}
+
+export function renderMarkdown(body: string, index: KnowledgeIndex, base = import.meta.env.BASE_URL, title?: string) {
   const md = new MarkdownIt({ html: false, linkify: true, typographer: true });
   const lookup = new Map<string, string[]>();
   const add = (value: string, uuid: string) => {
@@ -44,5 +56,5 @@ export function renderMarkdown(body: string, index: KnowledgeIndex, base = impor
     state.pos += match[0].length;
     return true;
   });
-  return md.render(body);
+  return md.render(withoutDuplicateTitle(body, title));
 }
