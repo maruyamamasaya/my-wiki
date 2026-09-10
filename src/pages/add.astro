@@ -7,12 +7,13 @@ import Layout from '../layouts/Layout.astro';
   </section>
   <script>
     // @ts-nocheck
+    import { dateInJapan } from '../lib/datetime';
     const title=document.querySelector('#title'), body=document.querySelector('#body'), folder=document.querySelector('#folder'), links=document.querySelector('#links'), message=document.querySelector('#message');
     const data=await fetch(`${import.meta.env.BASE_URL}knowledge-index.json`).then(r=>r.json());
     const known=new Map(); Object.values(data.articles).forEach(a=>[a.title,...a.aliases].forEach(v=>known.set(v.toLocaleLowerCase(),a)));
     body.addEventListener('input',()=>{ if(!title.value){const h1=body.value.match(/^#\s+(.+)$/m);if(h1)title.value=h1[1].trim()} const found=[...new Set([...body.value.matchAll(/\[\[([^\]|#]+)/g)].map(m=>m[1].trim()))]; links.innerHTML=found.length?found.map(v=>`<div class="${known.has(v.toLocaleLowerCase())?'status-ok':'status-warn'}">${known.has(v.toLocaleLowerCase())?'✓':'?'} [[${escapeHtml(v)}]]</div>`).join(''):'Wiki Linkはまだありません。';});
     const escapeHtml=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-    const build=()=>{const now=new Date().toISOString().slice(0,10), id=crypto.randomUUID(), safe=(title.value||'untitled').trim(), slug=safe.toLocaleLowerCase().replace(/[^\p{L}\p{N}]+/gu,'-').replace(/^-|-$/g,'')||id; const text=`---\nid: ${id}\ntitle: ${JSON.stringify(safe)}\naliases: []\ncreated: ${now}\nupdated: ${now}\ntags: []\n---\n\n${body.value.trim()}\n`; return {text,name:`${folder.value}/${slug}.md`}};
+    const build=()=>{const now=dateInJapan(), id=crypto.randomUUID(), safe=(title.value||'untitled').trim(), slug=safe.toLocaleLowerCase().replace(/[^\p{L}\p{N}]+/gu,'-').replace(/^-|-$/g,'')||id; const text=`---\nid: ${id}\ntitle: ${JSON.stringify(safe)}\naliases: []\ncreated: ${now}\nupdated: ${now}\ntags: []\n---\n\n${body.value.trim()}\n`; return {text,name:`${folder.value}/${slug}.md`}};
     document.querySelector('#download').addEventListener('click',()=>{if(!title.value.trim()||!body.value.trim()){message.textContent='タイトルと本文を入力してください。';return}const v=build(),a=document.createElement('a');a.href=URL.createObjectURL(new Blob([v.text],{type:'text/markdown'}));a.download=v.name.split('/').pop();a.click();URL.revokeObjectURL(a.href);message.textContent=`${v.name} 用のMarkdownを作成しました。`;});
     document.querySelector('#copy').addEventListener('click',async()=>{if(!title.value.trim()||!body.value.trim()){message.textContent='タイトルと本文を入力してください。';return}await navigator.clipboard.writeText(build().text);message.textContent='Front Matter付きMarkdownをコピーしました。';});
   </script>

@@ -26,6 +26,7 @@
 - UUIDは全記事で一意かつ有効。
 - Articleにはtitleがある。
 - Backlinkは解決済みoutgoing linkから再生成される。
+- 記事の日付生成と画面上の日時表示は`Asia/Tokyo`を基準とする。
 
 ## Open Questions
 

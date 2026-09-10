@@ -23,6 +23,8 @@ tags: [openshift]
 
 UUIDは記事作成時だけ生成し、移動、ファイル名変更、title変更の際も変更しません。本文のリンクには`[[OpenShift]]`を使います。
 
+`created`と`updated`の日付、および画面に表示する日時は日本時間（`Asia/Tokyo`）を基準にします。既存記事を編集した場合は`updated`を日本時間の日付へ更新してください。
+
 ## Obsidian
 
 Obsidianで`content/`をVaultとして開きます。通常のMarkdownとWiki Linkのまま編集でき、移動・rename後もFront Matterの`id`を維持します。
