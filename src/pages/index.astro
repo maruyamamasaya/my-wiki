@@ -11,31 +11,26 @@ articles.forEach((article) => article.tags.forEach((tag) => tagCounts.set(tag, (
 const tags = [...tagCounts].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
 ---
 <Layout title="My Wiki" description="気になったもの、好きなもの、あとでまた見たいものを集める個人的な図鑑">
-  <header class="home-intro">
-    <p class="eyebrow">MY INTEREST COLLECTION</p>
-    <h1>気になるものを、<br />気の向くままに。</h1>
-    <p>好きなもの、面白かったこと、あとでまた見たいもの。<br />完成度を気にせず残していく、個人的な図鑑です。</p>
+  <header class="home-heading">
+    <h1>My Wiki</h1>
+    <form class="home-search" action={`${import.meta.env.BASE_URL}search/`}><label class="sr-only" for="home-query">Wikiを検索</label><input id="home-query" name="q" type="search" placeholder="タイトル、タグ、本文から探す" /><button class="button" type="submit">検索</button></form>
   </header>
 
   <div class="home-layout">
     <section class="wiki-section recent-section">
-      <div class="section-heading"><div><p class="eyebrow">RECENT</p><h2>最近追加・更新したもの</h2></div><span class="meta">{articles.length} items</span></div>
+      <div class="section-heading"><h2>最近追加・更新したもの</h2></div>
       <ul class="interest-cards">{recentArticles.map((article) => <li><a href={articleUrl(article.uuid)}><strong>{article.title}</strong><div class="card-footer"><div class="tags">{article.tags.slice(0, 3).map((tag) => <span class="tag">#{tag}</span>)}</div><time datetime={article.updated}>{article.updated}</time></div></a></li>)}</ul>
     </section>
 
     <aside class="home-aside">
       <section class="wiki-section local-reading" id="frequent-section">
-        <div class="section-heading"><div><p class="eyebrow">FAVORITES</p><h2>最近よく見ているもの</h2></div></div>
+        <div class="section-heading"><h2>最近よく見ているもの</h2></div>
         <ol id="frequent-articles" class="compact-article-list"></ol>
         <p id="frequent-empty" class="empty-note">何度か読み返したページが、ここに並びます。</p>
       </section>
       <section class="wiki-section genres-section">
-        <div class="section-heading"><div><p class="eyebrow">INTERESTS</p><h2>興味のジャンル</h2></div></div>
+        <div class="section-heading"><h2>タグから探す</h2></div>
         <div class="genre-tags">{tags.map(([tag, count]) => <a class="genre-tag" href={`${import.meta.env.BASE_URL}search/?tag=${encodeURIComponent(tag)}`}><span>#{tag}</span><small>{count}</small></a>)}</div>
-      </section>
-      <section class="wander-card">
-        <p class="eyebrow">WANDER</p><h2>気ままに探す</h2><p>名前を思い出せないものも、本文の言葉から探せます。</p>
-        <form class="home-search" action={`${import.meta.env.BASE_URL}search/`}><label class="sr-only" for="home-query">Wikiを検索</label><input id="home-query" name="q" type="search" placeholder="何が気になる？" /><button class="button" type="submit">探す</button></form>
       </section>
     </aside>
   </div>

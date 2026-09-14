@@ -2,7 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 ---
 <Layout title="気になったことを残す · My Wiki">
-  <section class="narrow-page"><p class="eyebrow">QUICK NOTE</p><h1>気になったことを残す</h1><p class="lead">数行のメモでも大丈夫です。「これ面白い」と思った気持ちが新しいうちに、気軽に置いておきましょう。</p><p class="muted">入力内容はGitHubで確認し、記事追加のPull Requestとして安全に追加されます。WikiがGitHubの認証情報を保持することはありません。</p>
+  <section class="narrow-page"><h1>気になったことを残す</h1><p class="lead">数行のメモや箇条書きだけでも追加できます。</p><p class="muted">入力内容はGitHubで確認し、記事追加のPull Requestとして安全に追加されます。WikiがGitHubの認証情報を保持することはありません。</p>
     <div class="panel form-grid"><label>タイトル<input id="title" placeholder="本文のH1から自動検出" /></label><label>置き場所<select id="folder"><option>misc</option><option>music</option><option>games</option><option>science</option><option>history</option><option>computer</option><option>ai</option><option>coffee</option><option>gadgets</option><option>places</option><option>media</option></select></label><label>メモ本文<span class="field-hint">短い文章や箇条書きだけでもOK</span><textarea id="body" placeholder="# タイトル\n\n面白いと思ったこと、あとで見返したいこと"></textarea></label><div><strong>つながり</strong><div id="links" class="link-check muted">ほかのページへのWiki Linkはまだありません。</div></div><div class="actions"><button id="submit" class="button">GitHubで追加を確認</button><button id="download" class="button secondary">Markdownを保存</button><button id="copy" class="button secondary">完成形をコピー</button></div><p class="meta">GitHubでIssueを送信すると、内容を検証してPull Requestを作成します。あとはPRをマージすれば公開されます。</p><p id="message" class="meta" aria-live="polite"></p></div>
   </section>
   <script>
