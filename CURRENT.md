@@ -13,6 +13,7 @@ AstroによるGitHub Pages向け静的な「個人的な興味図鑑」を実装
 - `content/`を正本とするMarkdown管理
 - UUIDベースの記事URLとpath変更追従
 - 興味を眺めるHome、本文中心のArticle、全文検索、気軽なMarkdown追加UI
+- Living Auroraを基調にした、Deep surfaceと節度ある光を使う表示テーマ
 - GitHub ActionsによるPages build/deploy
 - Indexerの主要不変条件テスト
 

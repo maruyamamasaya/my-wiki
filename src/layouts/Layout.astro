@@ -12,12 +12,19 @@ const base = import.meta.env.BASE_URL;
     <meta name="description" content={description} />
     <script is:inline>
       const savedTheme = localStorage.getItem('wiki-theme');
-      const themes = ['paper', 'dark', 'sepia', 'forest', 'midnight'];
-      document.documentElement.dataset.theme = themes.includes(savedTheme) ? savedTheme : (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'paper');
+      const themes = ['aurora', 'paper', 'dark', 'sepia', 'forest', 'midnight'];
+      document.documentElement.dataset.theme = themes.includes(savedTheme) ? savedTheme : 'aurora';
     </script>
     <title>{title}</title>
   </head>
   <body data-base={base} data-article-id={article?.uuid} data-article-title={article?.title}>
+    <div class="aurora-environment" aria-hidden="true">
+      <span class="aurora-light aurora-light-violet"></span>
+      <span class="aurora-light aurora-light-cyan"></span>
+      <span class="aurora-light aurora-light-blue"></span>
+      <span class="aurora-light aurora-light-magenta"></span>
+      <span class="aurora-sweep"></span>
+    </div>
     <header class="site-header">
       <a class="brand" href={base}><span class="brand-mark" aria-hidden="true">✦</span> My Wiki</a>
       <nav aria-label="メインナビゲーション">
@@ -36,6 +43,7 @@ const base = import.meta.env.BASE_URL;
         <div class="theme-control">
           <button class="browser-button" id="theme-toggle" type="button" aria-label="テーマを変更" title="テーマを変更" aria-haspopup="listbox" aria-expanded="false">◐</button>
           <div class="theme-menu" id="theme-menu" role="listbox" aria-label="表示テーマ" hidden>
+            <button type="button" role="option" data-theme-value="aurora"><span class="theme-swatch swatch-aurora"></span><span>Living Aurora</span><span class="theme-check">✓</span></button>
             <button type="button" role="option" data-theme-value="paper"><span class="theme-swatch swatch-paper"></span><span>Paper</span><span class="theme-check">✓</span></button>
             <button type="button" role="option" data-theme-value="dark"><span class="theme-swatch swatch-dark"></span><span>Dark</span><span class="theme-check">✓</span></button>
             <button type="button" role="option" data-theme-value="sepia"><span class="theme-swatch swatch-sepia"></span><span>Sepia</span><span class="theme-check">✓</span></button>

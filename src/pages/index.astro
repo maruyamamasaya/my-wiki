@@ -5,10 +5,24 @@ import { articleUrl } from '../lib/wiki';
 import type { KnowledgeIndex } from '../../scripts/indexer';
 const knowledgeIndex = index as KnowledgeIndex;
 const articles = Object.values(knowledgeIndex.articles).sort((a,b) => b.updated.localeCompare(a.updated));
-const recentArticles = articles.slice(0, 8);
 const tagCounts = new Map<string, number>();
 articles.forEach((article) => article.tags.forEach((tag) => tagCounts.set(tag, (tagCounts.get(tag) ?? 0) + 1)));
 const tags = [...tagCounts].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+const excerpt = (body: string, title: string) => {
+  const text = body
+    .replace(/```[\s\S]*?```/g, ' ')
+    .replace(/^\s*(?:---+|___+|\*\*\*+)\s*$/gm, ' ')
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, ' ')
+    .replace(/\[([^\]]+)\]\([^)]*\)/g, '$1')
+    .replace(/\[\[([^\]|#]+)(?:#[^\]|]+)?(?:\|([^\]]+))?\]\]/g, (_match, target, label) => label || target)
+    .replace(/^\s{0,3}#{1,6}\s+/gm, '')
+    .replace(/^\s*(?:[-*+>]|\d+\.)\s+/gm, '')
+    .replace(/[*_~`|]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+  const withoutDuplicateTitle = text.startsWith(title) ? text.slice(title.length).trim() : text;
+  return withoutDuplicateTitle.length > 120 ? `${withoutDuplicateTitle.slice(0, 120).trimEnd()}…` : withoutDuplicateTitle;
+};
 ---
 <Layout title="My Wiki" description="気になったもの、好きなもの、あとでまた見たいものを集める個人的な図鑑">
   <header class="home-heading">
@@ -17,9 +31,14 @@ const tags = [...tagCounts].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0
   </header>
 
   <div class="home-layout">
-    <section class="wiki-section recent-section">
-      <div class="section-heading"><h2>最近追加・更新したもの</h2></div>
-      <ul class="interest-cards">{recentArticles.map((article) => <li><a href={articleUrl(article.uuid)}><strong>{article.title}</strong><div class="card-footer"><div class="tags">{article.tags.slice(0, 3).map((tag) => <span class="tag">#{tag}</span>)}</div><time datetime={article.updated}>{article.updated}</time></div></a></li>)}</ul>
+    <section class="wiki-section articles-section">
+      <div class="section-heading"><h2>すべての記事</h2><span class="section-count">{articles.length}件</span></div>
+      <ul class="article-index">{articles.map((article, articleIndex) => <li hidden={articleIndex >= 50}><a href={articleUrl(article.uuid)}><div class="article-index-heading"><strong>{article.title}</strong><time datetime={article.updated}>{article.updated}</time></div><p>{excerpt(article.body, article.title) || '本文はまだありません。'}</p></a></li>)}</ul>
+      <nav class="article-pagination" aria-label="記事一覧のページ送り">
+        <button id="page-previous" type="button">前へ</button>
+        <span id="page-position" aria-live="polite">1–{Math.min(50, articles.length)} / {articles.length}件</span>
+        <button id="page-next" type="button" disabled={articles.length <= 50}>次へ</button>
+      </nav>
     </section>
 
     <aside class="home-aside">
@@ -65,6 +84,36 @@ const tags = [...tagCounts].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0
       fill('frequent-articles', 'frequent-section', frequent, true);
       if (frequent.length) document.querySelector('#frequent-empty')?.remove();
     };
+    const articleItems = [...document.querySelectorAll<HTMLElement>('.article-index > li')];
+    const previousButton = document.querySelector<HTMLButtonElement>('#page-previous');
+    const nextButton = document.querySelector<HTMLButtonElement>('#page-next');
+    const pagePosition = document.querySelector<HTMLElement>('#page-position');
+    const pageSize = 50;
+    const totalPages = Math.max(1, Math.ceil(articleItems.length / pageSize));
+    const requestedPage = Number(new URLSearchParams(location.search).get('page') || '1');
+    let currentPage = Number.isInteger(requestedPage) ? Math.min(Math.max(requestedPage, 1), totalPages) : 1;
+    const renderArticlePage = (page: number, updateHistory = false) => {
+      currentPage = Math.min(Math.max(page, 1), totalPages);
+      const start = (currentPage - 1) * pageSize;
+      const end = Math.min(start + pageSize, articleItems.length);
+      articleItems.forEach((item, index) => { item.hidden = index < start || index >= end; });
+      if (previousButton) previousButton.disabled = currentPage === 1;
+      if (nextButton) nextButton.disabled = currentPage === totalPages;
+      if (pagePosition) pagePosition.textContent = articleItems.length ? `${start + 1}–${end} / ${articleItems.length}件` : '0件';
+      if (updateHistory) {
+        const url = new URL(location.href);
+        if (currentPage === 1) url.searchParams.delete('page'); else url.searchParams.set('page', String(currentPage));
+        history.pushState({ page: currentPage }, '', url);
+        document.querySelector('.articles-section')?.scrollIntoView({ behavior: 'smooth' });
+      }
+    };
+    previousButton?.addEventListener('click', () => renderArticlePage(currentPage - 1, true));
+    nextButton?.addEventListener('click', () => renderArticlePage(currentPage + 1, true));
+    addEventListener('popstate', () => {
+      const page = Number(new URLSearchParams(location.search).get('page') || '1');
+      renderArticlePage(Number.isInteger(page) ? page : 1);
+    });
     renderReadingData();
+    renderArticlePage(currentPage);
   </script>
 </Layout>
