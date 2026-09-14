@@ -33,7 +33,13 @@ const excerpt = (body: string, title: string) => {
   <div class="home-layout">
     <section class="wiki-section articles-section">
       <div class="section-heading"><h2>すべての記事</h2><span class="section-count">{articles.length}件</span></div>
-      <ul class="article-index">{articles.map((article, articleIndex) => <li hidden={articleIndex >= 50}><a href={articleUrl(article.uuid)}><div class="article-index-heading"><strong>{article.title}</strong><time datetime={article.updated}>{article.updated}</time></div><p>{excerpt(article.body, article.title) || '本文はまだありません。'}</p></a></li>)}</ul>
+      <div class="article-filter">
+        <label class="filter-query" for="article-filter">タイトル・タグで絞り込む<input id="article-filter" type="search" placeholder="例：哲学、ワイン、AI" autocomplete="off" /></label>
+        <label class="filter-sort" for="article-sort">並び順<select id="article-sort"><option value="updated">更新が新しい</option><option value="views">閲覧数が多い</option><option value="title">タイトル順</option></select></label>
+        <span id="article-filter-count" aria-live="polite">全{articles.length}件</span>
+      </div>
+      <p id="article-filter-empty" class="empty-note" hidden>一致する記事はありませんでした。</p>
+      <ul class="article-index">{articles.map((article, articleIndex) => <li hidden={articleIndex >= 50} data-uuid={article.uuid} data-title={article.title} data-tags={article.tags.join(' ')} data-updated={article.updated} data-views="0"><a href={articleUrl(article.uuid)}><div class="article-index-heading"><strong>{article.title}</strong><span class="article-stats"><time datetime={article.updated}>{article.updated}</time><span class="view-count">0回閲覧</span></span></div><p>{excerpt(article.body, article.title) || '本文はまだありません。'}</p></a></li>)}</ul>
       <nav class="article-pagination" aria-label="記事一覧のページ送り">
         <button id="page-previous" type="button">前へ</button>
         <span id="page-position" aria-live="polite">1–{Math.min(50, articles.length)} / {articles.length}件</span>
@@ -42,6 +48,15 @@ const excerpt = (body: string, title: string) => {
     </section>
 
     <aside class="home-aside">
+      <section class="wiki-section random-reading">
+        <div class="section-heading"><h2>ランダムに読む</h2><span class="section-count">3件</span></div>
+        <ul id="random-articles" class="compact-article-list"></ul>
+      </section>
+      <section class="wiki-section reading-history">
+        <div class="section-heading"><h2>閲覧履歴</h2></div>
+        <ol id="history-articles" class="compact-article-list"></ol>
+        <p id="history-empty" class="empty-note">読んだページが、新しい順に並びます。</p>
+      </section>
       <section class="wiki-section local-reading" id="frequent-section">
         <div class="section-heading"><h2>最近よく見ているもの</h2></div>
         <ol id="frequent-articles" class="compact-article-list"></ol>
@@ -64,10 +79,9 @@ const excerpt = (body: string, title: string) => {
       try { const url = new URL(value, location.origin); return url.origin === location.origin && url.pathname.startsWith(base) ? url.pathname : base; }
       catch { return base; }
     };
-    const fill = (listId: string, sectionId: string, items: ReadingItem[], showCount = false) => {
+    const fill = (listId: string, items: ReadingItem[], showCount = false) => {
       const list = document.querySelector(`#${listId}`);
-      const section = document.querySelector<HTMLElement>(`#${sectionId}`);
-      if (!list || !section || !items.length) return;
+      if (!list || !items.length) return;
       list.replaceChildren(...items.map((item) => {
         const li = document.createElement('li');
         const link = document.createElement('a');
@@ -76,18 +90,51 @@ const excerpt = (body: string, title: string) => {
         if (showCount) { const count = document.createElement('span'); count.textContent = `${item.count}回`; li.append(count); }
         return li;
       }));
-      section.hidden = false;
     };
     const renderReadingData = () => {
       const items = readItems();
+      const recent = [...items].sort((a, b) => b.lastViewed - a.lastViewed).slice(0, 5);
       const frequent = [...items].filter((item) => item.count > 1).sort((a, b) => b.count - a.count || b.lastViewed - a.lastViewed).slice(0, 5);
-      fill('frequent-articles', 'frequent-section', frequent, true);
+      fill('history-articles', recent);
+      fill('frequent-articles', frequent, true);
+      if (recent.length) document.querySelector('#history-empty')?.remove();
       if (frequent.length) document.querySelector('#frequent-empty')?.remove();
     };
     const articleItems = [...document.querySelectorAll<HTMLElement>('.article-index > li')];
+    const readingItems = readItems();
+    const viewCounts = new Map(readingItems.map((item) => [item.uuid, item.count]));
+    articleItems.forEach((item) => {
+      const views = viewCounts.get(item.dataset.uuid || '') || 0;
+      item.dataset.views = String(views);
+      const viewCount = item.querySelector<HTMLElement>('.view-count');
+      if (viewCount) viewCount.textContent = `${views}回閲覧`;
+    });
+    const randomList = document.querySelector('#random-articles');
+    if (randomList) {
+      const shuffled = [...articleItems];
+      for (let index = shuffled.length - 1; index > 0; index -= 1) {
+        const swapIndex = Math.floor(Math.random() * (index + 1));
+        [shuffled[index], shuffled[swapIndex]] = [shuffled[swapIndex], shuffled[index]];
+      }
+      randomList.replaceChildren(...shuffled.slice(0, 3).map((item) => {
+        const li = document.createElement('li');
+        const sourceLink = item.querySelector<HTMLAnchorElement>('a');
+        const link = document.createElement('a');
+        link.href = sourceLink?.href || base;
+        link.textContent = item.dataset.title || '無題の記事';
+        li.append(link);
+        return li;
+      }));
+    }
     const previousButton = document.querySelector<HTMLButtonElement>('#page-previous');
     const nextButton = document.querySelector<HTMLButtonElement>('#page-next');
     const pagePosition = document.querySelector<HTMLElement>('#page-position');
+    const pagination = document.querySelector<HTMLElement>('.article-pagination');
+    const articleIndex = document.querySelector<HTMLElement>('.article-index');
+    const filterInput = document.querySelector<HTMLInputElement>('#article-filter');
+    const sortSelect = document.querySelector<HTMLSelectElement>('#article-sort');
+    const filterCount = document.querySelector<HTMLElement>('#article-filter-count');
+    const filterEmpty = document.querySelector<HTMLElement>('#article-filter-empty');
     const pageSize = 50;
     const totalPages = Math.max(1, Math.ceil(articleItems.length / pageSize));
     const requestedPage = Number(new URLSearchParams(location.search).get('page') || '1');
@@ -109,9 +156,48 @@ const excerpt = (body: string, title: string) => {
     };
     previousButton?.addEventListener('click', () => renderArticlePage(currentPage - 1, true));
     nextButton?.addEventListener('click', () => renderArticlePage(currentPage + 1, true));
+    const renderArticleFilter = () => {
+      const query = (filterInput?.value || '').trim().replace(/^#/, '').toLocaleLowerCase();
+      if (!query) {
+        if (pagination) pagination.hidden = false;
+        if (filterEmpty) filterEmpty.hidden = true;
+        if (filterCount) filterCount.textContent = `全${articleItems.length}件`;
+        renderArticlePage(currentPage);
+        return;
+      }
+      let matches = 0;
+      articleItems.forEach((item) => {
+        const searchable = `${item.dataset.title || ''} ${item.dataset.tags || ''}`.toLocaleLowerCase();
+        const matched = searchable.includes(query);
+        item.hidden = !matched;
+        if (matched) matches += 1;
+      });
+      if (pagination) pagination.hidden = true;
+      if (filterEmpty) filterEmpty.hidden = matches > 0;
+      if (filterCount) filterCount.textContent = `${matches} / ${articleItems.length}件`;
+    };
+    filterInput?.addEventListener('input', renderArticleFilter);
+    sortSelect?.addEventListener('change', () => {
+      const sort = sortSelect.value;
+      articleItems.sort((left, right) => {
+        if (sort === 'views') {
+          const viewDifference = Number(right.dataset.views || 0) - Number(left.dataset.views || 0);
+          if (viewDifference) return viewDifference;
+        }
+        if (sort === 'title') return (left.dataset.title || '').localeCompare(right.dataset.title || '', 'ja');
+        return (right.dataset.updated || '').localeCompare(left.dataset.updated || '') || (left.dataset.title || '').localeCompare(right.dataset.title || '', 'ja');
+      });
+      articleIndex?.replaceChildren(...articleItems);
+      currentPage = 1;
+      const url = new URL(location.href);
+      url.searchParams.delete('page');
+      history.replaceState({ page: 1 }, '', url);
+      renderArticleFilter();
+    });
     addEventListener('popstate', () => {
       const page = Number(new URLSearchParams(location.search).get('page') || '1');
-      renderArticlePage(Number.isInteger(page) ? page : 1);
+      currentPage = Number.isInteger(page) ? page : 1;
+      renderArticleFilter();
     });
     renderReadingData();
     renderArticlePage(currentPage);

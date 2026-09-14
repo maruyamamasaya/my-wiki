@@ -60,6 +60,11 @@ h2 { margin: 0; font-size: 1.3rem; line-height: 1.4; }
 .wiki-section { margin-bottom: 42px; }
 .section-heading { display: flex; align-items: end; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
 .section-count { color: var(--muted); font-size: .8rem; }
+.article-filter { display: grid; grid-template-columns: minmax(0, 1fr) minmax(150px, auto) auto; align-items: end; gap: 12px; margin-bottom: 18px; }
+.article-filter label { display: grid; gap: 7px; color: var(--muted); font-size: .84rem; font-weight: 650; }
+.article-filter input, .article-filter select { min-width: 0; }
+.article-filter span { padding-bottom: 9px; color: var(--muted); font-size: .78rem; white-space: nowrap; }
+.article-filter + .empty-note { margin-bottom: 18px; }
 .article-index { margin: 0; padding: 0; border-top: 1px solid var(--light-line); list-style: none; }
 .article-index li { border-bottom: 1px solid var(--light-line); }
 .article-index a { display: block; padding: 17px 2px 18px; color: var(--ink); transition: color .16s ease, background-color .16s ease, padding .16s ease; }
@@ -67,7 +72,8 @@ h2 { margin: 0; font-size: 1.3rem; line-height: 1.4; }
 [data-theme="aurora"] .article-index a:hover { padding-inline: 12px; background: linear-gradient(90deg, rgb(85 221 224 / 7%), transparent 72%); }
 .article-index-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 20px; }
 .article-index strong { font-size: 1rem; line-height: 1.5; }
-.article-index time { flex: none; color: var(--muted); font-size: .72rem; }
+.article-stats { display: flex; flex: none; align-items: center; gap: 10px; padding: 0; }
+.article-index time, .article-index .view-count { color: var(--muted); font-size: .72rem; }
 .article-index p { display: -webkit-box; overflow: hidden; margin: 4px 0 0; color: var(--muted); font-size: .84rem; line-height: 1.55; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
 .article-pagination { display: grid; grid-template-columns: minmax(82px, auto) 1fr minmax(82px, auto); align-items: center; gap: 12px; margin-top: 22px; }
 .article-pagination button { border: 1px solid var(--line); border-radius: 9px; background: var(--surface); color: var(--ink); padding: 8px 13px; font: inherit; font-size: .84rem; font-weight: 650; cursor: pointer; }
@@ -185,8 +191,10 @@ textarea { min-height: 300px; resize: vertical; font-family: "Cascadia Code", ui
   main { width: min(100% - 28px, 680px); padding-top: 28px; }
   .home-heading { grid-template-columns: 1fr; gap: 18px; margin-bottom: 38px; }
   .home-layout, .article-shell { grid-template-columns: 1fr; gap: 24px; }
+  .article-filter { grid-template-columns: 1fr; }
+  .article-filter span { padding-bottom: 0; }
   .article-index-heading { display: block; }
-  .article-index time { display: block; margin-top: 2px; }
+  .article-stats { margin-top: 2px; }
   .home-aside { padding: 0; }
   .article { padding-top: 10px; }
   .sidebar { position: static; padding-top: 0; }
