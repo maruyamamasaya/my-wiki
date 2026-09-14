@@ -21,6 +21,13 @@ function withoutDuplicateTitle(body: string, title?: string) {
   return lines.join('\n');
 }
 
+function restoreEscapedStrongMarkers(body: string) {
+  return body
+    .split(/(\r?\n)/)
+    .map((line) => line.replace(/\\\*\\\*(?=\S)(.+?\S)\\\*\\\*/g, '**$1**'))
+    .join('');
+}
+
 function headingText(token?: Token) {
   return token?.children?.map((child) => child.content).join('') || token?.content || '';
 }
@@ -88,7 +95,7 @@ export function renderMarkdownWithToc(body: string, index: KnowledgeIndex, base 
       toc.push({ id, level, text });
     });
   });
-  const html = md.render(withoutDuplicateTitle(body, title));
+  const html = md.render(restoreEscapedStrongMarkers(withoutDuplicateTitle(body, title)));
   return { html, toc };
 }
 

@@ -2,18 +2,17 @@
 
 ## Current Phase
 
-Knowledge Wiki v1 implemented and validated
+My Interest Wiki UI refresh
 
 ## Current State
 
-AstroによるGitHub Pages向け静的Wikiを実装済み。Markdownの永久UUIDを記事IDとし、Indexerが現在path、Wiki Link、Backlink、未解決・曖昧リンクを再構築する。
+AstroによるGitHub Pages向け静的な「個人的な興味図鑑」を実装。趣味・雑学・好きなものを、完成度を気にせず残す。仕事・資格・体系的な技術学習は`maruyamamasaya/study`が担当する。Markdownの永久UUIDを記事IDとし、Indexerが現在path、Wiki Link、Backlink、未解決・曖昧リンクを再構築する。
 
 ## Working
 
 - `content/`を正本とするMarkdown管理
 - UUIDベースの記事URLとpath変更追従
-- Home、Article、全文検索、Markdown追加UI
-- 未整理Markdownのdry-run付き一括インポートCLI
+- 興味を眺めるHome、本文中心のArticle、全文検索、気軽なMarkdown追加UI
 - GitHub ActionsによるPages build/deploy
 - Indexerの主要不変条件テスト
 

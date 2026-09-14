@@ -54,6 +54,11 @@ describe('renderMarkdown wiki links', () => {
     expect(html).toContain('<td>完了</td>');
   });
 
+  it('restores paired strong markers escaped by copied Markdown', () => {
+    expect(render('\\*\\*重要\\*\\*')).toContain('<strong>重要</strong>');
+    expect(render('\\*単独のアスタリスク\\*')).toContain('<p>*単独のアスタリスク*</p>');
+  });
+
   it('omits only a leading H1 that duplicates the page title', () => {
     const html = renderMarkdown('# OpenShift\n\n本文\n\n# 別の見出し', index, '/my-wiki/', 'OpenShift');
     expect(html).not.toContain('<h1>OpenShift</h1>');

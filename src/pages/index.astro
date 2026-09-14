@@ -5,14 +5,39 @@ import { articleUrl } from '../lib/wiki';
 import type { KnowledgeIndex } from '../../scripts/indexer';
 const knowledgeIndex = index as KnowledgeIndex;
 const articles = Object.values(knowledgeIndex.articles).sort((a,b) => b.updated.localeCompare(a.updated));
-const tags = [...new Set(articles.flatMap((a) => a.tags))].sort();
+const recentArticles = articles.slice(0, 8);
+const tagCounts = new Map<string, number>();
+articles.forEach((article) => article.tags.forEach((tag) => tagCounts.set(tag, (tagCounts.get(tag) ?? 0) + 1)));
+const tags = [...tagCounts].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
 ---
-<Layout>
-  <header class="page-heading"><h1>Knowledge Wiki</h1><p class="muted">{articles.length}件の記事</p></header>
-  <form class="home-search" action={`${import.meta.env.BASE_URL}search/`}><label class="sr-only" for="home-query">記事を検索</label><input id="home-query" name="q" type="search" placeholder="記事を検索" /><button class="button" type="submit">検索</button></form>
-  <div class="grid wiki-grid">
-    <section class="wiki-section"><div class="section-heading"><h2>記事</h2><span class="meta">更新順</span></div><ul class="article-list">{articles.map((article) => <li><a href={articleUrl(article.uuid)}>{article.title}</a><div class="meta">{article.updated} · {article.path}</div></li>)}</ul></section>
-    <aside><section class="wiki-section local-reading" id="frequent-section" hidden><h2>よく見る記事</h2><ol id="frequent-articles" class="compact-article-list"></ol></section><section class="wiki-section local-reading" id="history-section" hidden><h2>閲覧履歴</h2><ol id="recent-articles" class="compact-article-list"></ol><button id="clear-history" class="text-button" type="button">履歴を消去</button></section><section class="wiki-section"><h2>タグ</h2><div class="tags">{tags.map((tag) => <a class="tag" href={`${import.meta.env.BASE_URL}search/?tag=${encodeURIComponent(tag)}`}>#{tag}</a>)}</div></section><section class="wiki-section link-summary"><h2>リンク</h2><dl><div><dt>未解決</dt><dd>{knowledgeIndex.unresolvedLinks.length}</dd></div><div><dt>曖昧</dt><dd>{knowledgeIndex.ambiguousLinks.length}</dd></div></dl></section></aside>
+<Layout title="My Wiki" description="気になったもの、好きなもの、あとでまた見たいものを集める個人的な図鑑">
+  <header class="home-intro">
+    <p class="eyebrow">MY INTEREST COLLECTION</p>
+    <h1>気になるものを、<br />気の向くままに。</h1>
+    <p>好きなもの、面白かったこと、あとでまた見たいもの。<br />完成度を気にせず残していく、個人的な図鑑です。</p>
+  </header>
+
+  <div class="home-layout">
+    <section class="wiki-section recent-section">
+      <div class="section-heading"><div><p class="eyebrow">RECENT</p><h2>最近追加・更新したもの</h2></div><span class="meta">{articles.length} items</span></div>
+      <ul class="interest-cards">{recentArticles.map((article) => <li><a href={articleUrl(article.uuid)}><strong>{article.title}</strong><div class="card-footer"><div class="tags">{article.tags.slice(0, 3).map((tag) => <span class="tag">#{tag}</span>)}</div><time datetime={article.updated}>{article.updated}</time></div></a></li>)}</ul>
+    </section>
+
+    <aside class="home-aside">
+      <section class="wiki-section local-reading" id="frequent-section">
+        <div class="section-heading"><div><p class="eyebrow">FAVORITES</p><h2>最近よく見ているもの</h2></div></div>
+        <ol id="frequent-articles" class="compact-article-list"></ol>
+        <p id="frequent-empty" class="empty-note">何度か読み返したページが、ここに並びます。</p>
+      </section>
+      <section class="wiki-section genres-section">
+        <div class="section-heading"><div><p class="eyebrow">INTERESTS</p><h2>興味のジャンル</h2></div></div>
+        <div class="genre-tags">{tags.map(([tag, count]) => <a class="genre-tag" href={`${import.meta.env.BASE_URL}search/?tag=${encodeURIComponent(tag)}`}><span>#{tag}</span><small>{count}</small></a>)}</div>
+      </section>
+      <section class="wander-card">
+        <p class="eyebrow">WANDER</p><h2>気ままに探す</h2><p>名前を思い出せないものも、本文の言葉から探せます。</p>
+        <form class="home-search" action={`${import.meta.env.BASE_URL}search/`}><label class="sr-only" for="home-query">Wikiを検索</label><input id="home-query" name="q" type="search" placeholder="何が気になる？" /><button class="button" type="submit">探す</button></form>
+      </section>
+    </aside>
   </div>
   <script>
     type ReadingItem = { uuid: string; title: string; url: string; count: number; lastViewed: number };
@@ -41,10 +66,10 @@ const tags = [...new Set(articles.flatMap((a) => a.tags))].sort();
     };
     const renderReadingData = () => {
       const items = readItems();
-      fill('recent-articles', 'history-section', items.slice(0, 5));
-      fill('frequent-articles', 'frequent-section', [...items].filter((item) => item.count > 1).sort((a, b) => b.count - a.count || b.lastViewed - a.lastViewed).slice(0, 5), true);
+      const frequent = [...items].filter((item) => item.count > 1).sort((a, b) => b.count - a.count || b.lastViewed - a.lastViewed).slice(0, 5);
+      fill('frequent-articles', 'frequent-section', frequent, true);
+      if (frequent.length) document.querySelector('#frequent-empty')?.remove();
     };
-    document.querySelector('#clear-history')?.addEventListener('click', () => { localStorage.removeItem(key); location.reload(); });
     renderReadingData();
   </script>
 </Layout>

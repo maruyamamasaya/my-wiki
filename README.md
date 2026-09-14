@@ -1,6 +1,13 @@
-# Personal Knowledge Wiki
+# My Wiki
 
-Markdownを正本として管理する、自分専用の静的Knowledge Wikiです。記事はファイル名や保存場所ではなくFront Matterの永久UUIDで識別します。Obsidianで`content/`をVaultとして編集し、GitHubへのpushでGitHub Pagesが自動更新されます。
+気になったもの、好きなもの、あとでまた見たいものを集める個人的な図鑑です。完成された百科事典ではなく、数行のメモや「これ面白い」という発見も気軽に残します。
+
+## `study`との役割分担
+
+- **`maruyamamasaya/study`**: 仕事・資格・技術学習を体系化する場所。正確性・再利用性・整理を重視します。
+- **`maruyamamasaya/my-wiki`**: 趣味・雑学・興味・好きなものを残す場所。完成度より「気になったから残す」を重視します。
+
+My WikiはMarkdownを正本とする静的Wikiです。記事はファイル名や保存場所ではなくFront Matterの永久UUIDで識別します。Obsidianで`content/`をVaultとして編集し、GitHubへのpushでGitHub Pagesが自動更新されます。
 
 ## 開発
 
@@ -8,7 +15,7 @@ Node.js 22以降で`npm install`後、`npm run dev`を実行します。`npm run
 
 ## Markdownを追加する
 
-Webの「記事を追加」でMarkdownを貼り付け、「GitHubで追加を確認」からIssueを送信すると、GitHub Actionsが内容を検証して記事追加のPull Requestを作成します。PRを確認してマージするとPagesへ公開されます。初回のみRepositoryの Settings → Actions → Generalで「Allow GitHub Actions to create and approve pull requests」を有効にしてください。静的サイトにGitHub tokenは保存しません。
+Webの「気になったことを残す」でMarkdownを貼り付け、「GitHubで追加を確認」からIssueを送信すると、GitHub Actionsが内容を検証して記事追加のPull Requestを作成します。PRを確認してマージするとPagesへ公開されます。初回のみRepositoryの Settings → Actions → Generalで「Allow GitHub Actions to create and approve pull requests」を有効にしてください。静的サイトにGitHub tokenは保存しません。
 
 ダウンロードとコピーも予備の追加方法として利用できます。ダウンロードした場合はファイルを`content/`配下へ置き、必要ならaliasesやtagsを編集してください。
 
