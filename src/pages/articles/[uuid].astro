@@ -18,6 +18,9 @@ const showToc = rendered.toc.length > 0;
       </header>
       <div class="prose" set:html={rendered.html} />
     </article>
-    <aside class="sidebar"><div class="article-aside">{showToc && <details class="toc-disclosure"><summary>目次</summary><nav class="toc" aria-label="目次"><h2>目次</h2><ol>{rendered.toc.map((heading) => <li class={`toc-level-${heading.level}`}><a href={`#${heading.id}`}>{heading.text}</a></li>)}</ol></nav></details>}{article.tags.length > 0 && <section><h2>タグ</h2><div class="tags" aria-label="タグ">{article.tags.map((tag:string) => <a class="tag" href={`${import.meta.env.BASE_URL}search/?tag=${encodeURIComponent(tag)}`}>#{tag}</a>)}</div></section>}<section><h2>関連するページ</h2>{backlinks.length ? <ul class="related-list">{backlinks.map((a:any) => <li><a href={articleUrl(a.uuid)}>{a.title}</a></li>)}</ul> : <p class="meta">つながっているページは、まだありません。</p>}</section><dl class="article-meta"><div><dt>作成</dt><dd>{article.created}</dd></div><div><dt>更新</dt><dd>{article.updated}</dd></div></dl></div></aside>
+    <aside class="sidebar"><div class="article-aside">{showToc && <>
+      <nav class="toc toc-desktop" aria-label="目次"><h2>目次</h2><ol>{rendered.toc.map((heading) => <li class={`toc-level-${heading.level}`}><a href={`#${heading.id}`}>{heading.text}</a></li>)}</ol></nav>
+      <details class="toc-disclosure"><summary>目次</summary><nav class="toc" aria-label="目次"><h2>目次</h2><ol>{rendered.toc.map((heading) => <li class={`toc-level-${heading.level}`}><a href={`#${heading.id}`}>{heading.text}</a></li>)}</ol></nav></details>
+    </>}{article.tags.length > 0 && <section><h2>タグ</h2><div class="tags" aria-label="タグ">{article.tags.map((tag:string) => <a class="tag" href={`${import.meta.env.BASE_URL}search/?tag=${encodeURIComponent(tag)}`}>#{tag}</a>)}</div></section>}<section><h2>関連するページ</h2>{backlinks.length ? <ul class="related-list">{backlinks.map((a:any) => <li><a href={articleUrl(a.uuid)}>{a.title}</a></li>)}</ul> : <p class="meta">つながっているページは、まだありません。</p>}</section><dl class="article-meta"><div><dt>作成</dt><dd>{article.created}</dd></div><div><dt>更新</dt><dd>{article.updated}</dd></div></dl></div></aside>
   </div>
 </Layout>

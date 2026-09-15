@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import '../styles/themes.css';
 const defaultDescription = '気になったもの、好きなもの、あとでまた見たいものを集める個人的な図鑑';
 const { title = 'My Wiki', description = defaultDescription, article = undefined } = Astro.props;
 const base = import.meta.env.BASE_URL;
@@ -13,8 +14,8 @@ const base = import.meta.env.BASE_URL;
     <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
     <script is:inline>
       const savedTheme = localStorage.getItem('wiki-theme');
-      const themes = ['aurora', 'paper', 'dark', 'sepia', 'forest', 'midnight'];
-      document.documentElement.dataset.theme = themes.includes(savedTheme) ? savedTheme : 'aurora';
+      const themes = ['aurora', 'wiki', 'win98', 'pulse-neon', 'blue-cosmos'];
+      document.documentElement.dataset.theme = themes.includes(savedTheme) ? savedTheme : savedTheme === 'paper' ? 'wiki' : 'aurora';
     </script>
     <title>{title}</title>
   </head>
@@ -45,11 +46,10 @@ const base = import.meta.env.BASE_URL;
           <button class="browser-button" id="theme-toggle" type="button" aria-label="テーマを変更" title="テーマを変更" aria-haspopup="listbox" aria-expanded="false">◐</button>
           <div class="theme-menu" id="theme-menu" role="listbox" aria-label="表示テーマ" hidden>
             <button type="button" role="option" data-theme-value="aurora"><span class="theme-swatch swatch-aurora"></span><span>Living Aurora</span><span class="theme-check">✓</span></button>
-            <button type="button" role="option" data-theme-value="paper"><span class="theme-swatch swatch-paper"></span><span>Paper</span><span class="theme-check">✓</span></button>
-            <button type="button" role="option" data-theme-value="dark"><span class="theme-swatch swatch-dark"></span><span>Dark</span><span class="theme-check">✓</span></button>
-            <button type="button" role="option" data-theme-value="sepia"><span class="theme-swatch swatch-sepia"></span><span>Sepia</span><span class="theme-check">✓</span></button>
-            <button type="button" role="option" data-theme-value="forest"><span class="theme-swatch swatch-forest"></span><span>Forest</span><span class="theme-check">✓</span></button>
-            <button type="button" role="option" data-theme-value="midnight"><span class="theme-swatch swatch-midnight"></span><span>Midnight</span><span class="theme-check">✓</span></button>
+            <button type="button" role="option" data-theme-value="wiki"><span class="theme-swatch swatch-wiki"></span><span>Simple Wiki</span><span class="theme-check">✓</span></button>
+            <button type="button" role="option" data-theme-value="win98"><span class="theme-swatch swatch-win98"></span><span>Windows 98</span><span class="theme-check">✓</span></button>
+            <button type="button" role="option" data-theme-value="pulse-neon"><span class="theme-swatch swatch-pulse-neon"></span><span>Pulse Neon</span><span class="theme-check">✓</span></button>
+            <button type="button" role="option" data-theme-value="blue-cosmos"><span class="theme-swatch swatch-blue-cosmos"></span><span>Blue Cosmos</span><span class="theme-check">✓</span></button>
           </div>
         </div>
       </div>

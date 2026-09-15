@@ -1,0 +1,64 @@
+/* Product-specific interpretations of the three Living Aurora Ready Themes. */
+[data-theme="wiki"] {
+  --ink: #202122; --muted: #54595d; --paper: #fff; --surface: #fff; --subtle: #f8f9fa;
+  --line: #a2a9b1; --light-line: #eaecf0; --accent: #0645ad; --accent-hover: #0b0080;
+  --accent-soft: #eaf3ff; --accent-soft-hover: #d8e9ff; --accent-contrast: #fff;
+  --warm: #fff8e6; --warn: #9b521b; --shadow: rgb(32 33 34 / 10%);
+  color-scheme: light;
+}
+[data-theme="wiki"] .site-header { border-bottom-color: var(--line); background: var(--surface); }
+[data-theme="wiki"] .brand-mark, [data-theme="wiki"] .panel, [data-theme="wiki"] .bottom-browser,
+[data-theme="wiki"] .theme-menu, [data-theme="wiki"] .search-input, [data-theme="wiki"] input,
+[data-theme="wiki"] select, [data-theme="wiki"] textarea { border-radius: 2px; box-shadow: none; }
+[data-theme="wiki"] .home-heading h1, [data-theme="wiki"] .article-header h1 { font-weight: 600; }
+[data-theme="wiki"] .article-index a:hover { background: var(--subtle); }
+[data-theme="wiki"] .genre-tag, [data-theme="wiki"] .tag, [data-theme="wiki"] .add-link { border-radius: 2px; }
+
+[data-theme="win98"] {
+  --ink: #000; --muted: #343434; --paper: #008080; --surface: #c0c0c0; --subtle: #d4d0c8;
+  --line: #808080; --light-line: #a0a0a0; --accent: #000080; --accent-hover: #000060;
+  --accent-soft: #e4e4e4; --accent-soft-hover: #fff; --accent-contrast: #fff;
+  --warm: #e4dcb8; --warn: #7d2a00; --shadow: rgb(0 0 0 / 28%);
+  font-family: Tahoma, "MS UI Gothic", "Noto Sans JP", sans-serif; color-scheme: light;
+}
+[data-theme="win98"] body { background: var(--paper); }
+[data-theme="win98"] .site-header { margin: 8px; min-height: 45px; border: 2px solid; border-color: #fff #404040 #404040 #fff; background: var(--surface); }
+[data-theme="win98"] .brand-mark, [data-theme="win98"] .panel, [data-theme="win98"] .bottom-browser,
+[data-theme="win98"] .theme-menu, [data-theme="win98"] .article-pagination button,
+[data-theme="win98"] .browser-button, [data-theme="win98"] .button,
+[data-theme="win98"] .toc-disclosure > summary { border-radius: 0; border: 2px solid; border-color: #fff #404040 #404040 #fff; box-shadow: 1px 1px #000; background: var(--surface); color: #000; backdrop-filter: none; }
+[data-theme="win98"] .browser-button:active, [data-theme="win98"] .button:active { border-color: #404040 #fff #fff #404040; box-shadow: none; }
+[data-theme="win98"] .button:not(.secondary) { background: #000080; color: #fff; border-color: #9696c5 #000040 #000040 #9696c5; }
+[data-theme="win98"] input, [data-theme="win98"] textarea, [data-theme="win98"] select,
+[data-theme="win98"] .address-bar { border-radius: 0; border: 2px solid; border-color: #404040 #fff #fff #404040; background: #fff; color: #000; }
+[data-theme="win98"] .tag, [data-theme="win98"] .genre-tag, [data-theme="win98"] .add-link { border-radius: 0; }
+[data-theme="win98"] .article-index a:hover { background: #d4d0c8; }
+
+[data-theme="pulse-neon"] {
+  --ink: #f1f4ff; --muted: #aab0c7; --paper: #050509; --surface: #11111a; --subtle: #1b1b27;
+  --line: #686083; --light-line: #312c43; --accent: #eb79ff; --accent-hover: #ffadf9;
+  --accent-soft: rgb(235 121 255 / 12%); --accent-soft-hover: rgb(235 121 255 / 20%); --accent-contrast: #17091b;
+  --warm: rgb(255 122 160 / 10%); --warn: #ffb58c; --shadow: rgb(0 0 0 / 55%); color-scheme: dark;
+}
+[data-theme="pulse-neon"] body { background: radial-gradient(circle at 80% 4%, #231126, transparent 33%), #050509; }
+[data-theme="pulse-neon"] .site-header, [data-theme="pulse-neon"] .bottom-browser { border-color: #584568; background: #11111a; backdrop-filter: none; box-shadow: inset 0 1px #84639b, 0 12px 36px var(--shadow); }
+[data-theme="pulse-neon"] .panel, [data-theme="pulse-neon"] .theme-menu { border: 1px solid #584568; background: #11111a; box-shadow: inset 0 1px #84639b, 0 20px 48px var(--shadow); }
+[data-theme="pulse-neon"] .article-index a:hover { background: linear-gradient(90deg, rgb(235 121 255 / 13%), transparent 75%); }
+[data-theme="pulse-neon"] .button:not(.secondary):hover, [data-theme="pulse-neon"] .browser-button:hover { box-shadow: 0 0 16px rgb(235 121 255 / 24%); }
+
+[data-theme="blue-cosmos"] {
+  --ink: #eaf1ff; --muted: #a9b9d9; --paper: #050c1e; --surface: #0d1832; --subtle: #142447;
+  --line: #49638f; --light-line: #253c65; --accent: #a6c8ff; --accent-hover: #d1e2ff;
+  --accent-soft: rgb(166 200 255 / 12%); --accent-soft-hover: rgb(166 200 255 / 20%); --accent-contrast: #08152d;
+  --warm: rgb(192 206 255 / 8%); --warn: #ffd0a2; --shadow: rgb(0 0 0 / 48%); color-scheme: dark;
+}
+[data-theme="blue-cosmos"] body { background: radial-gradient(circle at 70% 10%, #152d5b, transparent 36%), radial-gradient(circle at 14% 74%, #0b1a3d, transparent 40%), #050c1e; }
+[data-theme="blue-cosmos"] .site-header, [data-theme="blue-cosmos"] .bottom-browser { background: rgb(13 24 50 / 92%); border-color: #3d5782; box-shadow: 0 14px 44px var(--shadow); }
+[data-theme="blue-cosmos"] .panel, [data-theme="blue-cosmos"] .theme-menu { border: 1px solid #3d5782; background: linear-gradient(145deg, #142447, #0a152d); }
+[data-theme="blue-cosmos"] .article-index a:hover { background: linear-gradient(90deg, rgb(166 200 255 / 9%), transparent 75%); }
+
+.swatch-wiki { --swatch-paper: #fff; --swatch-accent: #0645ad; }
+.swatch-win98 { --swatch-paper: #c0c0c0; --swatch-accent: #008080; }
+.swatch-pulse-neon { --swatch-paper: #050509; --swatch-accent: #eb79ff; }
+.swatch-blue-cosmos { --swatch-paper: #050c1e; --swatch-accent: #a6c8ff; }
+.theme-menu { width: 210px; }
