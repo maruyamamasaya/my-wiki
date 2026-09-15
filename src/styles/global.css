@@ -38,6 +38,7 @@ a:hover { color: var(--accent-hover); text-decoration: underline; }
 .brand { display: flex; align-items: center; gap: 10px; color: var(--ink); font-size: 1.08rem; font-weight: 750; letter-spacing: .01em; }
 .brand:hover { text-decoration: none; }
 .brand-mark { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 10px; background: var(--accent-soft); color: var(--accent); font-size: 1rem; }
+.brand-mark img { display: block; width: 32px; height: 32px; border-radius: 10px; }
 [data-theme="aurora"] .brand-mark { border: 1px solid rgb(85 221 224 / 24%); background: linear-gradient(135deg, rgb(139 108 255 / 17%), rgb(85 221 224 / 10%)); box-shadow: 0 0 22px rgb(85 221 224 / 12%), inset 0 1px rgb(238 242 255 / 10%); }
 .site-header nav { display: flex; align-items: center; gap: 20px; font-size: .88rem; }
 .site-header nav > a:not(.add-link) { color: var(--muted); }
@@ -200,12 +201,12 @@ textarea { min-height: 300px; resize: vertical; font-family: "Cascadia Code", ui
   .sidebar { position: static; padding-top: 0; }
   .article-aside { gap: 24px; padding: 24px; border-radius: 16px; background: var(--subtle); }
   .toc-disclosure { margin: 0; }
-  .toc-disclosure > summary { position: fixed; z-index: 32; right: 18px; bottom: 156px; display: flex; align-items: center; justify-content: center; gap: 10px; min-width: 112px; min-height: 52px; padding: 12px 18px; border: 0; border-radius: 999px; background: var(--accent); box-shadow: 0 8px 24px var(--shadow); color: var(--accent-contrast); font: inherit; font-size: .92rem; font-weight: 700; cursor: pointer; list-style: none; }
+  .toc-disclosure > summary { position: fixed; z-index: 32; right: 18px; bottom: 152px; display: flex; align-items: center; justify-content: center; gap: 10px; min-width: 124px; min-height: 56px; padding: 14px 20px; border: 0; border-radius: 999px; background: var(--accent); box-shadow: 0 8px 24px var(--shadow); color: var(--accent-contrast); font: inherit; font-size: 1rem; font-weight: 700; cursor: pointer; list-style: none; }
   .toc-disclosure > summary::-webkit-details-marker { display: none; }
   .toc-disclosure > summary::after { content: "＋"; color: inherit; font-size: 1.15rem; font-weight: 400; }
   .toc-disclosure[open] > summary::after { content: "−"; }
   .toc-disclosure:not([open]) > .toc { display: none; }
-  .toc-disclosure .toc { position: fixed; z-index: 31; right: 18px; bottom: 218px; width: min(360px, calc(100vw - 36px)); max-height: min(55vh, 480px); margin: 0; padding: 16px 18px; overflow-y: auto; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); box-shadow: 0 12px 36px var(--shadow); }
+  .toc-disclosure .toc { position: fixed; z-index: 31; right: 18px; bottom: 216px; width: min(360px, calc(100vw - 36px)); max-height: min(55vh, 480px); margin: 0; padding: 16px 18px; overflow-y: auto; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); box-shadow: 0 12px 36px var(--shadow); }
   .toc-disclosure .toc h2 { display: none; }
   .panel { padding: 18px; }
   .actions { display: grid; }

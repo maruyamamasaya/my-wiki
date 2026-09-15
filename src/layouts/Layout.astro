@@ -10,6 +10,7 @@ const base = import.meta.env.BASE_URL;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
     <script is:inline>
       const savedTheme = localStorage.getItem('wiki-theme');
       const themes = ['aurora', 'paper', 'dark', 'sepia', 'forest', 'midnight'];
@@ -26,7 +27,7 @@ const base = import.meta.env.BASE_URL;
       <span class="aurora-sweep"></span>
     </div>
     <header class="site-header">
-      <a class="brand" href={base}><span class="brand-mark" aria-hidden="true">✦</span> My Wiki</a>
+      <a class="brand" href={base}><span class="brand-mark" aria-hidden="true"><img src={`${base}favicon.svg`} alt="" /></span> My Wiki</a>
       <nav aria-label="メインナビゲーション">
         <a href={base}>ホーム</a><a href={`${base}search/`}>探す</a><a class="add-link" href={`${base}add/`}>気になったことを残す</a>
       </nav>

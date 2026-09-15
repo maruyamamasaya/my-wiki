@@ -8,7 +8,7 @@ export function getStaticPaths() { return Object.values(index.articles).map((art
 const { article } = Astro.props as { article: IndexedArticle };
 const backlinks = article.backlinks.map((uuid:string) => knowledgeIndex.articles[uuid]).filter(Boolean);
 const rendered = renderMarkdownWithToc(article.body, knowledgeIndex, import.meta.env.BASE_URL, article.title);
-const showToc = rendered.toc.length >= 2;
+const showToc = rendered.toc.length > 0;
 ---
 <Layout title={`${article.title} · My Wiki`} description={`${article.title}についてのメモ`} article={article}>
   <div class="article-shell">
